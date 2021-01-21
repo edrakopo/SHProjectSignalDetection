@@ -73,9 +73,9 @@ elif join.lower() == 'n':
 
 
 
-
+# ACHTUNG, THIS CODE IS NOW OBSOLETE AND WILL MOST LIKELY NOT FUNCTION
 # Line of best fit, to see modulation in baseline
-yline, pfit, stats, rms = fnc.linfit(time,data)
+yline, pfit, stats, rms = fnc.linfit(time,data,1)
 c, m = pfit
 
 
