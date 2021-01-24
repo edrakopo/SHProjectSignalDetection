@@ -69,7 +69,7 @@ for i in range(150):
 # then use pyFFTW to do fourier transform of our data, possibly FT for multiple events all together (superimposed)
 
 
-y = 10000
+y = 100
 # Collect important values about a certain number of events (y)
 meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches, y)
 
@@ -99,6 +99,8 @@ pfit, stats, rms, c, m = fnc.linfit(time,branches,y)
 
 
 
+
+
 ######## Create line to plot event RANDOM, commented out for run time
 yline = []
 q = random.randint(0,y)
@@ -113,3 +115,53 @@ plt.xlabel("Sample Time (ns)")
 plt.ylabel("ADC Value")
 plt.title("Trendline of " + str(file) + " event " + str(q) )
 plt.show()
+
+
+############# BASELINE/LINEAR TREND REMOVAL ###############
+
+# moving data to be adjusted, data[i] is the ith event
+scaleddata = [None] * y
+lindata = [None] * y
+newdata = []
+
+# Removal of baseline and lintrend
+for i in range(y):
+    # blocking removal of signal baseline, will be rewritten in the future
+
+    # no signal
+    if sigvals[i] == 0:
+        # remove baseline
+        print("event " + str(i) + ": \n" + str(branches['ADC'][i]))
+        print("subtract " + str(c[i]))
+        scaleddata[i] = branches['ADC'][i] - c[i]
+        print("baseline removed event" + str(i) + ": \n" + str(scaleddata[i]))
+
+        # Remove linear trend
+        for j in range(len(time)):
+            # Write new data to dummy list
+            newdata.append(scaleddata[i][j] - m[i]*time[j])
+        # Apply to real list
+        lindata[i] = newdata
+        # Refresh dummy list
+        newdata = []
+    # signal. work on this later!
+    elif sigvals[i] ==1:
+        print("event " + str(i) + " Signal! Do not process yet!")
+print("Completed")
+
+
+# To ensure its not a signal variable
+if sigvals[q] ==0:
+
+    # Plot trendline/baseline removed data
+    plt.plot(time,lindata[q],color='black',markersize=2)
+    plt.xlabel("Sample Time (ns)")
+    plt.ylabel("ADC Value")
+    plt.title("Trendline and Baseline removed " + str(file) + " event " + str(q) )
+    plt.show()
+
+# check if linear trend for lindata[q] is now 0. test variables, no longer needed
+#Polynomial = np.polynomial.Polynomial
+#testpfit, teststats = (Polynomial.fit(time, lindata[q], 1, full=True, window=(0, 150), domain=(0, 150)))
+#print("c: " + str(c[q]) + "\nm: " + str(m[q]))
+#print(testpfit)

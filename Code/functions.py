@@ -7,7 +7,9 @@ import math as m
 def linfit(x,y,z):
     """
     Method for finding the linear fit of a 2D plot for multiple non-signal events.
-    Returns the numpy array of the y axis points for the best fit line
+    Returns the numpy array of the y axis points for the best fit line.
+    WARNING - Only applies to branches['ADC'][i], as hardcoded into 'data' variable.
+              If you want this to change, you can alter it within the code on line 33
 
     :param x: x values
     :param y: y values
@@ -34,7 +36,7 @@ def linfit(x,y,z):
         # Fit to range cmin, cmax
         pfit[i], stats[i] = (Polynomial.fit(time, data, 1, full=True, window=(cmin, cmax), domain=(cmin, cmax)))
 
-        print("Fitting Results: ", pfit[i], stats[i], sep='\n')
+        #print("Fitting Results: ", pfit[i], stats[i], sep='\n')
 
         # labelling variables from fitting for ease of use
         c[i], m[i] = pfit[i]
@@ -42,8 +44,8 @@ def linfit(x,y,z):
         resid, rank, sing_val, rcond = stats[i]
         rms.append(np.sqrt(resid[0]/len(data)))
 
-        print("Fit: y = " + str(m[i]) + "x + " + str(c[i]))
-        print("RMS residual = " + str(rms[i]))
+        #print("Fit: y = " + str(m[i]) + "x + " + str(c[i]))
+        #print("RMS residual = " + str(rms[i]))
 
 
 
