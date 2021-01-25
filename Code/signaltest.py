@@ -4,6 +4,7 @@ import numpy as np
 import functions as fnc
 import pandas as pd
 import random
+import pyfftw
 
 from scipy import signal
 from scipy.fft import rfft, rfftfreq
@@ -24,7 +25,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "PMTsignals/Run203-PMT78.root"
+file = "PMTsignals/Run103-noise-PMT107.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -69,7 +70,7 @@ for i in range(150):
 # then use pyFFTW to do fourier transform of our data, possibly FT for multiple events all together (superimposed)
 
 
-y = 100
+y = 10000
 # Collect important values about a certain number of events (y)
 meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches, y)
 
@@ -103,7 +104,14 @@ pfit, stats, rms, c, m = fnc.linfit(time,branches,y)
 
 ######## Create line to plot event RANDOM, commented out for run time
 yline = []
-q = random.randint(0,y)
+
+# ensure random plot isn't a signal
+while True:
+    q = random.randint(0,y-1)
+    if sigvals[q] == 0:
+        break
+
+
 
 for j in range(len(time)):
     yline.append(m[q]*time[j]+c[q])
@@ -118,11 +126,15 @@ plt.show()
 
 
 ############# BASELINE/LINEAR TREND REMOVAL ###############
+# PACK ALL OF THIS INTO FUNCTIONS.PY SOON!
 
 # moving data to be adjusted, data[i] is the ith event
+
 scaleddata = [None] * y
 lindata = [None] * y
 newdata = []
+
+
 
 # Removal of baseline and lintrend
 for i in range(y):
@@ -131,10 +143,10 @@ for i in range(y):
     # no signal
     if sigvals[i] == 0:
         # remove baseline
-        print("event " + str(i) + ": \n" + str(branches['ADC'][i]))
-        print("subtract " + str(c[i]))
+        #print("event " + str(i) + ": \n" + str(branches['ADC'][i]))
+        #print("subtract " + str(c[i]))
         scaleddata[i] = branches['ADC'][i] - c[i]
-        print("baseline removed event" + str(i) + ": \n" + str(scaleddata[i]))
+        #print("baseline removed event" + str(i) + ": \n" + str(scaleddata[i]))
 
         # Remove linear trend
         for j in range(len(time)):
@@ -144,14 +156,15 @@ for i in range(y):
         lindata[i] = newdata
         # Refresh dummy list
         newdata = []
+        #print("event " + str(i) + " complete. Continuing...")
     # signal. work on this later!
     elif sigvals[i] ==1:
         print("event " + str(i) + " Signal! Do not process yet!")
-print("Completed")
+print("Completed Trendline Removal")
 
 
 # To ensure its not a signal variable
-if sigvals[q] ==0:
+if sigvals[q] == 0:
 
     # Plot trendline/baseline removed data
     plt.plot(time,lindata[q],color='black',markersize=2)
@@ -165,3 +178,39 @@ if sigvals[q] ==0:
 #testpfit, teststats = (Polynomial.fit(time, lindata[q], 1, full=True, window=(0, 150), domain=(0, 150)))
 #print("c: " + str(c[q]) + "\nm: " + str(m[q]))
 #print(testpfit)
+
+# finding DFT for noise events using pyFFTW
+# pyFFTW creation
+dftdata= [None] * y
+freqdata = [None] * y
+
+# Create FT data for random variable q, for testing.
+dftdata[q] = pyfftw.interfaces.numpy_fft.rfft(lindata[q])
+freqdata[q] = pyfftw.interfaces.numpy_fft.rfftfreq(len(time),1/500)
+
+plt.plot(freqdata[q],np.abs(dftdata[q]))
+plt.xlabel("Sample Frequency (MHz)")
+plt.ylabel("Amplitude")
+plt.title("Fourier transform of event " + str(q) + " - File " + str(file))
+plt.show()
+
+# Create FT of all data
+dfthist = [0] * len(dftdata[q])
+
+for i in range(y):
+    # ensure no signal collected for now
+    if sigvals[i] == 0:
+        # create fourier transform here
+        dftdata[i] = pyfftw.interfaces.numpy_fft.rfft(lindata[i])
+        # add to summation array
+        dfthist = np.add(dfthist,dftdata[i])
+
+plt.plot(freqdata[q],np.abs((dfthist).imag))
+plt.xlabel("Sample Frequency (MHz)")
+plt.ylabel("Amplitude")
+plt.title("Fourier Transform of all events (additive) of file " + str(file))
+plt.show()
+# Add all these up and plot
+
+
+# Create histogram of this data
