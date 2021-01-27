@@ -25,7 +25,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "PMTsignals/Run103-noise-PMT107.root"
+file = "PMTsignals/Run103-noise-PMT78.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -70,7 +70,7 @@ for i in range(150):
 # then use pyFFTW to do fourier transform of our data, possibly FT for multiple events all together (superimposed)
 
 
-y = 10000
+y = 100000
 # Collect important values about a certain number of events (y)
 meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches, y)
 
@@ -98,9 +98,13 @@ meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches, y)
 pfit, stats, rms, c, m = fnc.linfit(time,branches,y)
 # pfit is quite complicated, if given more time at the end REVISE THIS BIT OF CODE to not need c or m, but just pfit
 
-
-
-
+# Create distribution of 10th event - RAW DATA, signal removed
+datanosig = []
+for i in range(y):
+    # if not a signal
+    if sigvals[i] == 0:
+        datanosig.append(branches['ADC'][i])
+eventdistr = fnc.adcdist(datanosig,y)
 
 ######## Create line to plot event RANDOM, commented out for run time
 yline = []
@@ -173,6 +177,17 @@ if sigvals[q] == 0:
     plt.title("Trendline and Baseline removed " + str(file) + " event " + str(q) )
     plt.show()
 
+# Create distribution of 10th event - Trendline/baseline removed
+# filter out signal values (Nonetype right now) from eventdistr
+lindatanosig = []
+for i in range(0,len(lindata)):
+    if lindata[i] != None:
+        lindatanosig.append(lindata[i])
+eventdistr = fnc.adcdist(lindatanosig,len(lindatanosig))
+
+
+
+
 # check if linear trend for lindata[q] is now 0. test variables, no longer needed
 #Polynomial = np.polynomial.Polynomial
 #testpfit, teststats = (Polynomial.fit(time, lindata[q], 1, full=True, window=(0, 150), domain=(0, 150)))
@@ -210,7 +225,3 @@ plt.xlabel("Sample Frequency (MHz)")
 plt.ylabel("Amplitude")
 plt.title("Fourier Transform of all events (additive) of file " + str(file))
 plt.show()
-# Add all these up and plot
-
-
-# Create histogram of this data

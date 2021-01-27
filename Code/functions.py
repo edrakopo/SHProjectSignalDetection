@@ -94,3 +94,19 @@ def datacollate(branches, y):
             sigvals.append(0)
 
     return(meanvals, stdvals, minvals, maxvals, sigvals)
+
+
+# distribution of ADC Values
+def adcdist(events,samplesize):
+
+    eventdistr = []
+    for i in range(0,len(events)):
+        # take the 10th sample of every event and add to list
+        eventdistr.append(events[i][10])
+
+    # Plotting histogram
+    plt.hist(eventdistr,100)
+    plt.title("Histogram of 10th value from all events")
+    plt.show()
+
+    return(eventdistr)
