@@ -10,12 +10,19 @@ from scipy import signal
 from scipy.fft import rfft, rfftfreq
 from scipy import stats
 
+################ DESCRIPTION
+#
+# Opens up ROOT file, roughly removes signal events
+# Finds best straight line best fit for events
+# Then removes baseline and trendline from events
+# Calculates FT for baseline-trendline removed events
+################
+
+
 # PMTsignals/Run203-PMT107.root
 # PMTsignals/Run203-PMT78.root
 # PMTsignals/Run103-noise-PMT78.root
 # PMTsignals/Run103-noise-PMT107.root
-
-
 
 #file = uproot.open("PMTsignals/Run203-PMT107.root")
 #print(file.keys())
@@ -70,9 +77,9 @@ for i in range(150):
 # then use pyFFTW to do fourier transform of our data, possibly FT for multiple events all together (superimposed)
 
 
-y = 100000
+y = 100
 # Collect important values about a certain number of events (y)
-meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches, y)
+meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches['ADC'], y)
 
 
 ######### Show signal values and lists of all important values, will usually be commented out for faster runtimes

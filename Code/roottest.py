@@ -8,6 +8,13 @@ import pandas as pd
 from scipy import signal
 from scipy.fft import rfft, rfftfreq
 
+################ DESCRIPTION
+# OBSOLETE CODE FROM START OF PROJECT
+# Only kept due to usefulness of some of the operations within it.
+################
+
+
+
 # PMTsignals/Run203-PMT107.root
 # PMTsignals/Run203-PMT78.root
 # PMTsignals/Run103-noise-PMT78.root
@@ -40,7 +47,7 @@ for i in range(150):
 
 
 
-for i in range(50):
+for i in range(100):
     datarepeated = branches['ADC'][i]
     plt.plot(time,datarepeated)
     plt.xlabel("Sample Time (ns)")
