@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math as m
-
+import pyfftw
 
 # Linear Fit
 def linfit(x,y,z):
@@ -98,11 +98,20 @@ def datacollate(branches, y):
 
 # distribution of ADC Values
 def adcdist(events,samplesize):
+    """
+    Takes all events, and records the 10th sample from each event.
+    Then creating histogram of the samples, and returns the collection of 10th events.
+
+    :param events:          Events from ROOT file
+    :param samplesize:      No. of samples, to scale for different sample lengths
+    :return PLOT:           Plot of histogram distribution
+    :return eventdistr:     List of all 10th samples from all events
+    """
 
     eventdistr = []
     for i in range(0,len(events)):
         # take the 10th sample of every event and add to list
-        eventdistr.append(events[i][10])
+        eventdistr.append(events[i][9])
 
     # Plotting histogram
     plt.hist(eventdistr,100)
@@ -110,3 +119,55 @@ def adcdist(events,samplesize):
     plt.show()
 
     return(eventdistr)
+
+
+# baseline subtraction function
+def baselinesubtraction(data,mean):
+    """
+    Takes data and mean value, and removes the baseline from all data passed in.
+    Returns array of data with baseline removed
+
+    :param data:        Array of event data
+    :param mean:        Array of all mean across all Events
+    :return scaleddata: Array of event data baseline removed
+    """
+    scaleddata=[]
+    for i in range(len(data)):
+        # remove baseline
+        #print("event " + str(i) + ": \n" + str(branches['ADC'][i]))
+        #print("subtract " + str(c[i]))
+        scaleddata.append(data[i]-mean[i])
+        #print("baseline removed event" + str(i) + ": \n" + str(scaleddata[i]))
+    return(scaleddata)
+
+
+# Condensed FT creation
+def fouriertransformsimple(time, scaleddata, samplefreq, freq):
+    """
+    Takes time, data, and the sample frequency. Asks if frequency is needed.
+    Returns FT and FT-frequency of said data.
+
+    :param time:        Array of all time Values
+    :param scaleddata:  Array of events
+    :param samplefreq:  Sampling frequency
+    :param freq:        Boolean for whether or not freq needs to be calculated
+                        True - Calculated already
+                        False - Not yet calculated
+    :return dftdata:    FT data of events
+    :return freqdata:   FT-frequency data
+    """
+    # Creating variables required
+    dftdata = [None] * len(scaleddata)
+    # Create frequency data is needed (False)
+    if freq == False:
+        freqdata = pyfftw.interfaces.numpy_fft.rfftfreq(len(time),1/samplefreq)
+
+    # Create FT data
+    for q in range(len(scaleddata)):
+        #abs to remove negative components
+        dftdata[q] = np.abs(pyfftw.interfaces.numpy_fft.rfft(scaleddata[q]))
+    # return
+    if freq == False:
+        return(dftdata,freqdata)
+    else:
+        return(dftdata)

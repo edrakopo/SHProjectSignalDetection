@@ -141,22 +141,25 @@ plt.show()
 
 # moving data to be adjusted, data[i] is the ith event
 
-scaleddata = [None] * y
+#scaleddata = [None] * y
 lindata = [None] * y
 newdata = []
 
-
+# take y values from the array
+sliceddata = branches['ADC'][:y]
+# baseline subtraction
+scaleddata = fnc.baselinesubtraction(sliceddata, c)
 
 # Removal of baseline and lintrend
 for i in range(y):
     # blocking removal of signal baseline, will be rewritten in the future
 
-    # no signal
-    if sigvals[i] == 0:
+    # no signal, old baseline removal code
+    #if sigvals[i] == 0:
         # remove baseline
         #print("event " + str(i) + ": \n" + str(branches['ADC'][i]))
         #print("subtract " + str(c[i]))
-        scaleddata[i] = branches['ADC'][i] - c[i]
+    #    scaleddata[i] = branches['ADC'][i] - c[i]
         #print("baseline removed event" + str(i) + ": \n" + str(scaleddata[i]))
 
         # Remove linear trend
@@ -169,8 +172,8 @@ for i in range(y):
         newdata = []
         #print("event " + str(i) + " complete. Continuing...")
     # signal. work on this later!
-    elif sigvals[i] ==1:
-        print("event " + str(i) + " Signal! Do not process yet!")
+    #elif sigvals[i] ==1:
+    #    print("event " + str(i) + " Signal! Do not process yet!")
 print("Completed Trendline Removal")
 
 
