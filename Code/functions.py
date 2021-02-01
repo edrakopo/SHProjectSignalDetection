@@ -96,6 +96,34 @@ def datacollate(branches, y):
     return(meanvals, stdvals, minvals, maxvals, sigvals)
 
 
+# signal data for x sigms
+def sigmaevents(data, meanval, stdval, x):
+    """
+    Takes data from one event and checks what values are beyong X sigma of the mean.
+    Returns list of these Values, with all values not beyond sigma set at mean.
+
+    :param data:        Data from one signal event
+    :param meanvals:    Mean valuation of said event
+    :param stdvals:     Standard deviation of event
+    :param x:           The number of sigma needed to trigger listing
+    :return sigdata:    List of values beyond x sigma
+    """
+    # Events beyond x sigma
+    sigmasamples = []
+    # Test variables, uncomment if needed
+    #print("Data 0 "+ str(data[0]))
+    #print("Meanval "+ str(meanval))
+    #print("Stdval "+ str(stdval))
+    #print("x " + str(x))
+
+    for i in range(len(data)):
+        if (abs(meanval - data[i])) > (x*stdval):
+            sigmasamples.append(data[i])
+        else:
+            sigmasamples.append(meanval)
+
+    return(sigmasamples)
+
 # distribution of ADC Values
 def adcdist(events,samplesize):
     """

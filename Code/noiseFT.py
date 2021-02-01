@@ -77,7 +77,7 @@ for i in range(150):
 # then use pyFFTW to do fourier transform of our data, possibly FT for multiple events all together (superimposed)
 
 
-y = 100
+y = 100000
 # Collect important values about a certain number of events (y)
 meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches['ADC'], y)
 
