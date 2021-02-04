@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math as m
 import pyfftw
+import pandas as pd
+
 
 # Linear Fit
 def linfit(x,y,z):
@@ -199,3 +201,21 @@ def fouriertransformsimple(time, scaleddata, samplefreq, freq):
         return(dftdata,freqdata)
     else:
         return(dftdata)
+
+
+def rollmean(data,window):
+    """
+    Takes data, and the window size.
+    Returns the rolling mean data
+
+    :param data:    Array of data Values
+    :param window:  Size of window
+    :return:        Array of rolling mean values
+    """
+    # Testing rolling averages with pandas
+    df = pd.DataFrame({'A': data})
+    # window of 3 for our rolling average
+    df_rolling = df.rolling(window,min_periods=1).mean()
+    print(df_rolling)
+    rollingdata = df_rolling['A'].tolist()
+    return(rollingdata)

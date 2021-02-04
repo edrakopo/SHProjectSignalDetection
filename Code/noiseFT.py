@@ -32,7 +32,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "PMTsignals/Run103-noise-PMT78.root"
+file = "PMTsignals/Run103-noise-PMT171.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()

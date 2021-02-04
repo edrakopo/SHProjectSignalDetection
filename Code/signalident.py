@@ -5,7 +5,9 @@ import functions as fnc
 import pandas as pd
 import random
 import pyfftw
+import probfit
 
+from iminuit import Minuit
 from scipy import signal
 from scipy.fft import rfft, rfftfreq
 from scipy import stats
@@ -180,29 +182,74 @@ plt.show()
 # Most likely will be split into functions in functions.py
 
 
+# set up rolling mean, but when experiences significant variation
+rollingdata = []
+for i in range(len(filterdata)):
+    rollingdata.append(fnc.rollmean(filterdata[i],5))
+
+
+n = 0
+
+plt.plot(time,rollingdata[n])
+plt.title("Rolling mean Signal of " + str(file) + " event " + str(sigevents[n]))
+plt.xlabel("Sample Time (ns)")
+plt.ylabel("ADC Value")
+plt.show()
+
+
 # signal length CODE
     # find the point where the value goes 1sig/2sig/3sig from mean and plot over normal data, figure out what values work!
     # Then take the amount of time samples from the start to the end
 
 # Recompile meanval for our data
-fmeanvals, fstdvals, fminvals, fmaxvals, fsigvals = fnc.datacollate(filterdata, len(filterdata))
+fmeanvals, fstdvals, fminvals, fmaxvals, fsigvals = fnc.datacollate(rollingdata, len(rollingdata))
 
 
 # skip through values in signal events
 # n is which event to take
-n = 1
-onesigvals = fnc.sigmaevents(filterdata[n],0,fstdvals[n],1) # 0 -> fmeanvals[n]
-twosigvals = fnc.sigmaevents(filterdata[n],fmeanvals[n],fstdvals[n],2)
-threesigvals = fnc.sigmaevents(filterdata[n],fmeanvals[n],fstdvals[n],3)
-foursigvals = fnc.sigmaevents(filterdata[n],fmeanvals[n],fstdvals[n],4)
 
-plt.plot(time,filterdata[n], label="Normal")
+onesigvals = fnc.sigmaevents(rollingdata[n],0,fstdvals[n],1) # 0 -> fmeanvals[n]
+twosigvals = fnc.sigmaevents(rollingdata[n],fmeanvals[n],fstdvals[n],2)
+threesigvals = fnc.sigmaevents(rollingdata[n],fmeanvals[n],fstdvals[n],3)
+foursigvals = fnc.sigmaevents(rollingdata[n],fmeanvals[n],fstdvals[n],4)
+
+# FWHM code
+FWHMVAL = (fminvals[n]//2)
+# set to timegate due to inaccuracies in valuation, will be tested visually
+fwhmlength = timegate
+# go through all the values of the fit, and find what values are closest to this.
+for j in range(len(onesigvals)):
+    # if rollingdata[i] is larger, and hasn't been detected yet, ignore, if lower and hasn't been detected, mark
+    if (rollingdata[n][j] <= FWHMVAL):
+        fwhmlength += timegate
+
+
+
+# plotting purposes
+fwhmlist = [FWHMVAL] * len(time)
+
+plt.plot(time,rollingdata[n], label="Normal")
 plt.plot(time,onesigvals, label="One sigma")
+plt.plot(time,fwhmlist, label="FWHM")
 plt.legend()
-plt.title("Butterworth Filtered Signal of " + str(file) + " event " + str(sigevents[n]))
+plt.title("Butterworth Rolling Filtered Signal of " + str(file) + " event " + str(sigevents[n]))
 plt.xlabel("Sample Time (ns)")
 plt.ylabel("ADC Value")
 plt.show()
+
+
+# continuous fit of crystal ball function
+#cmean, cvar, cskew, ckurt = stats.crystalball.fit(rollingdata[n], floc=fminvals[n])
+#print("Crystal ball values: ")
+#print(cmean, cvar, cskew, ckurt)
+#print(fminvals[n])
+
+#plt.plot(time,stats.crystalball.rvs(time, ))
+#plt.show
+
+
+
+
 
 # find length of signal, set to 2 for first value not being counted
 siglength = timegate
@@ -215,10 +262,17 @@ for i in range(len(onesigvals)):
         siglength += samplelength
         signalvalues.append(onesigvals[i])
 
+
+
+
+
+
+
 print("EVENT " + str(sigevents[n]))
 
 print("Signal length: " + str(siglength) + "ns")
 
+print("FWHM: " + str(fwhmlength))
 
 # signal depth CODE, take from 0 as mean is untrustable
 print("Signal depth: " + str(fminvals[n]))
