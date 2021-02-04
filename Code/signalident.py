@@ -28,7 +28,7 @@ from scipy import stats
 # PMTsignals/Run103-noise-PMT107.root
 
 # Open the data, apply to variable
-file = "PMTsignals/Run203-PMT78.root"
+file = "E:\PMTsignals\Run203-PMT78.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()

@@ -32,7 +32,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "PMTsignals/Run103-noise-PMT171.root"
+file = "E:\PMTsignals\Run103-noise-PMT171.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -45,7 +45,8 @@ for i in range(150):
     time.append(i*2)
 
 
-
+print("Event number: ")
+print(str(len(branches['ADC'])))
 # Plot the first 50 events
 #for i in range(50):
 #    datarepeated = branches['ADC'][i]
@@ -81,7 +82,7 @@ y = 100000
 # Collect important values about a certain number of events (y)
 meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches['ADC'], y)
 
-
+print("Data collation complete")
 ######### Show signal values and lists of all important values, will usually be commented out for faster runtimes
 #for i in range(y):
 #    if sigvals[i] == 1:
@@ -104,14 +105,14 @@ meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches['ADC'], 
 # Line of best fit, to see modulation in baseline
 pfit, stats, rms, c, m = fnc.linfit(time,branches,y)
 # pfit is quite complicated, if given more time at the end REVISE THIS BIT OF CODE to not need c or m, but just pfit
-
+print("Linear Fitting complete")
 # Create distribution of 10th event - RAW DATA, signal removed
-datanosig = []
-for i in range(y):
+##datanosig = []
+##for i in range(y):
     # if not a signal
-    if sigvals[i] == 0:
-        datanosig.append(branches['ADC'][i])
-eventdistr = fnc.adcdist(datanosig,y)
+##    if sigvals[i] == 0:
+##        datanosig.append(branches['ADC'][i])
+##eventdistr = fnc.adcdist(datanosig,y)
 
 ######## Create line to plot event RANDOM, commented out for run time
 yline = []
@@ -126,7 +127,7 @@ while True:
 
 for j in range(len(time)):
     yline.append(m[q]*time[j]+c[q])
-
+print("Linear Fit Applied")
 # Plot line of best fit over data
 plt.plot(time,branches['ADC'][q],color='black',markersize=2)
 plt.plot(time,yline,color='red',linewidth=3)
@@ -189,11 +190,11 @@ if sigvals[q] == 0:
 
 # Create distribution of 10th event - Trendline/baseline removed
 # filter out signal values (Nonetype right now) from eventdistr
-lindatanosig = []
-for i in range(0,len(lindata)):
-    if lindata[i] != None:
-        lindatanosig.append(lindata[i])
-eventdistr = fnc.adcdist(lindatanosig,len(lindatanosig))
+##lindatanosig = []
+##for i in range(0,len(lindata)):
+##    if lindata[i] != None:
+##        lindatanosig.append(lindata[i])
+##eventdistr = fnc.adcdist(lindatanosig,len(lindatanosig))
 
 
 

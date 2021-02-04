@@ -77,6 +77,7 @@ def datacollate(branches, y):
 
     # Testing range of y values
     for i in range(y):
+
         datarepeated = branches[i]
         # Append data values to list
         meanvals.append(np.mean(datarepeated))
