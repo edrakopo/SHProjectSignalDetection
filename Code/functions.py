@@ -3,6 +3,7 @@ import numpy as np
 import math as m
 import pyfftw
 import pandas as pd
+import statistics
 
 
 # Linear Fit
@@ -66,6 +67,7 @@ def datacollate(branches, y):
     :return minvals:    Minimum values of all events in a list
     :return maxvals:    Maxmimum values of all events in a list
     :return sigvals:    List marking all events that had possible signals within them (0 or 1)
+    :return medianvals: Median values of all events in a list
     """
     # Mean,std, min, max, data collection
 
@@ -74,6 +76,7 @@ def datacollate(branches, y):
     minvals = []
     maxvals = []
     sigvals = []
+    medvals = []
 
     # Testing range of y values
     for i in range(y):
@@ -84,6 +87,8 @@ def datacollate(branches, y):
         stdvals.append(np.std(datarepeated))
         minvals.append(np.amin(datarepeated))
         maxvals.append(np.amax(datarepeated))
+        medvals.append(statistics.median(datarepeated))
+
 
         # Create array holding values 0 or 1 for all possible signals
         # If mean - min val is larger than 5 sigma, mark as signal
@@ -96,7 +101,7 @@ def datacollate(branches, y):
             # No signal
             sigvals.append(0)
 
-    return(meanvals, stdvals, minvals, maxvals, sigvals)
+    return(meanvals, stdvals, minvals, maxvals, sigvals, medvals)
 
 
 # signal data for x sigms
@@ -217,6 +222,5 @@ def rollmean(data,window):
     df = pd.DataFrame({'A': data})
     # window of 3 for our rolling average
     df_rolling = df.rolling(window,min_periods=1).mean()
-    print(df_rolling)
     rollingdata = df_rolling['A'].tolist()
     return(rollingdata)

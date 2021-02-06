@@ -49,7 +49,7 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 10
+y = 100000
 
 
 
@@ -58,7 +58,7 @@ y = 10
 # First, find signal events, use basic 5sigma method initially, can be changed at later date
 
 # using basic mean/sig finder
-meanvals, stdvals, minvals, maxvals, sigvals = fnc.datacollate(branches['ADC'], y)
+meanvals, stdvals, minvals, maxvals, sigvals, fmedvals = fnc.datacollate(branches['ADC'], y)
 
 print(sigvals)
 
@@ -202,107 +202,140 @@ plt.show()
     # Then take the amount of time samples from the start to the end
 
 # Recompile meanval for our data
-fmeanvals, fstdvals, fminvals, fmaxvals, fsigvals = fnc.datacollate(rollingdata, len(rollingdata))
+fmeanvals, fstdvals, fminvals, fmaxvals, fsigvals, fmedvals = fnc.datacollate(rollingdata, len(rollingdata))
 
 
 # skip through values in signal events
 # n is which event to take
 
-onesigvals = fnc.sigmaevents(rollingdata[n],0,fstdvals[n],1) # 0 -> fmeanvals[n]
-twosigvals = fnc.sigmaevents(rollingdata[n],fmeanvals[n],fstdvals[n],2)
-threesigvals = fnc.sigmaevents(rollingdata[n],fmeanvals[n],fstdvals[n],3)
-foursigvals = fnc.sigmaevents(rollingdata[n],fmeanvals[n],fstdvals[n],4)
+# sigma values
+sigmaval = 1
+# lists
+siglngthlst = []
+fwhmlst = []
+sgdpthlst = []
+intchrglst = []
+risetimelst = []
 
-# FWHM code
-FWHMVAL = (fminvals[n]//2)
-# set to timegate due to inaccuracies in valuation, will be tested visually
-fwhmlength = timegate
-# go through all the values of the fit, and find what values are closest to this.
-for j in range(len(onesigvals)):
-    # if rollingdata[i] is larger, and hasn't been detected yet, ignore, if lower and hasn't been detected, mark
-    if (rollingdata[n][j] <= FWHMVAL):
-        fwhmlength += timegate
+for n in range(len(rollingdata)):
 
 
+    onesigvals = fnc.sigmaevents(rollingdata[n],fmedvals[n],fstdvals[n],sigmaval) # 0 -> fmeanvals[n]
 
-# plotting purposes
-fwhmlist = [FWHMVAL] * len(time)
+    # FWHM code
+    FWHMVAL = (fminvals[n]//2)
+    # set to timegate due to inaccuracies in valuation, will be tested visually
+    fwhmlength = timegate
+    # go through all the values of the fit, and find what values are closest to this.
+    for j in range(len(onesigvals)):
+        # if rollingdata[i] is larger, and hasn't been detected yet, ignore, if lower and hasn't been detected, mark
+        if (rollingdata[n][j] <= FWHMVAL):
+            fwhmlength += timegate
 
-plt.plot(time,rollingdata[n], label="Normal")
-plt.plot(time,onesigvals, label="One sigma")
-plt.plot(time,fwhmlist, label="FWHM")
-plt.legend()
-plt.title("Butterworth Rolling Filtered Signal of " + str(file) + " event " + str(sigevents[n]))
-plt.xlabel("Sample Time (ns)")
-plt.ylabel("ADC Value")
+
+
+    # plotting purposes
+    fwhmlist = [FWHMVAL] * len(time)
+
+    #plt.plot(time,rollingdata[n], label="Normal")
+    #plt.plot(time,onesigvals, label=str(sigmaval) + " sigma")
+    #plt.plot(time,fwhmlist, label="FWHM")
+    #plt.legend()
+    #plt.title("Butterworth Rolling Filtered Signal of " + str(file) + " event " + str(sigevents[n]))
+    #plt.xlabel("Sample Time (ns)")
+    #plt.ylabel("ADC Value")
+    #plt.show()
+
+
+    # continuous fit of crystal ball function
+    #cmean, cvar, cskew, ckurt = stats.crystalball.fit(rollingdata[n], floc=fminvals[n])
+    #print("Crystal ball values: ")
+    #print(cmean, cvar, cskew, ckurt)
+    #print(fminvals[n])
+
+    #plt.plot(time,stats.crystalball.rvs(time, ))
+    #plt.show
+
+
+
+
+
+    # find length of signal, set to 2 for first value not being counted
+    siglength = timegate
+    # 2ns sample length
+    samplelength = timegate
+    # collect signal values for integrated charge
+    signalvalues = []
+    for i in range(len(onesigvals)):
+        if onesigvals[i] != fmedvals[n]: #fmeanvals[n] if onesigvals is changed
+            siglength += samplelength
+            signalvalues.append(onesigvals[i])
+
+
+
+
+
+
+
+    print("EVENT " + str(sigevents[n]))
+
+    print("Signal length: " + str(siglength) + "ns")
+
+    print("FWHM: " + str(fwhmlength) + " ns")
+
+    # signal depth CODE, take from 0 as mean is untrustable
+    print("Signal depth: " + str(fminvals[n]))
+
+
+    # integrated charge CODE
+        # from time events, take how much the signal deviated from the mean additively
+    intQ = np.sum(signalvalues)
+    print("Integrated charge in ADC value: " + str(intQ))
+
+
+    # rise time CODE
+        # time to go from 0.1 to 0.9 of signal amplitude (SOMETHING ELSE NEEDED TO BE CALCULATED)
+        # take min value, multiply by 0.1, and 0.9, find how far apart the points are that split the two
+        # on the graph, apply 2ns time window, bobs your uncle
+    #0.1 and 0.9 components
+    flow = fminvals[n]*0.1
+    fhigh = fminvals[n]*0.9
+    print("10% and 90% values: " + str(flow) + ", " + str(fhigh))
+    # list to create rise time
+    frisevals = []
+    for i in range(len(signalvalues)):
+        # if out of rise time range
+        #print(signalvalues[i])
+        if (signalvalues[i] > flow) or (signalvalues[i] < fhigh):
+            frisevals.append(0)
+        # if within rise time range
+        else:
+            frisevals.append(1)
+
+    # Apply time gate, /2 because both sides of wave are considered initially
+    risetime = ((np.sum(frisevals))*timegate)/2
+    print("Rise time: " + str(risetime) + "ns")
+
+
+    # Apply to lists
+    siglngthlst.append(siglength)
+    fwhmlst.append(fwhmlength)
+    sgdpthlst.append(fminvals[n])
+    intchrglst.append(intQ)
+    risetimelst.append(risetime)
+
+
+# plot height-width
+plt.scatter(fwhmlst,sgdpthlst)
+plt.title("FWHM against Height for file " + str(file))
+plt.xlabel("FWHM values (ns)")
+plt.ylabel("Signal depth (ADC values)")
 plt.show()
 
 
-# continuous fit of crystal ball function
-#cmean, cvar, cskew, ckurt = stats.crystalball.fit(rollingdata[n], floc=fminvals[n])
-#print("Crystal ball values: ")
-#print(cmean, cvar, cskew, ckurt)
-#print(fminvals[n])
-
-#plt.plot(time,stats.crystalball.rvs(time, ))
-#plt.show
-
-
-
-
-
-# find length of signal, set to 2 for first value not being counted
-siglength = timegate
-# 2ns sample length
-samplelength = timegate
-# collect signal values for integrated charge
-signalvalues = []
-for i in range(len(onesigvals)):
-    if onesigvals[i] != 0: #fmeanvals[n] if onesigvals is changed
-        siglength += samplelength
-        signalvalues.append(onesigvals[i])
-
-
-
-
-
-
-
-print("EVENT " + str(sigevents[n]))
-
-print("Signal length: " + str(siglength) + "ns")
-
-print("FWHM: " + str(fwhmlength))
-
-# signal depth CODE, take from 0 as mean is untrustable
-print("Signal depth: " + str(fminvals[n]))
-
-
-# integrated charge CODE
-    # from time events, take how much the signal deviated from the mean additively
-intQ = np.sum(signalvalues)
-print("Integrated charge in ADC value: " + str(intQ))
-
-
-# rise time CODE
-    # time to go from 0.1 to 0.9 of signal amplitude (SOMETHING ELSE NEEDED TO BE CALCULATED)
-    # take min value, multiply by 0.1, and 0.9, find how far apart the points are that split the two
-    # on the graph, apply 2ns time window, bobs your uncle
-#0.1 and 0.9 components
-flow = fminvals[n]*0.1
-fhigh = fminvals[n]*0.9
-print(flow, fhigh)
-# list to create rise time
-frisevals = []
-for i in range(len(signalvalues)):
-    # if out of rise time range
-    #print(signalvalues[i])
-    if (signalvalues[i] > flow) or (signalvalues[i] < fhigh):
-        frisevals.append(0)
-    # if within rise time range
-    else:
-        frisevals.append(1)
-
-# Apply time gate, /2 because both sides of wave are considered initially
-risetime = ((np.sum(frisevals))*timegate)/2
-print("Rise time: " + str(risetime) + "ns")
+# plot height-width
+plt.scatter(risetimelst,sgdpthlst)
+plt.title("Risetime against Height for file " + str(file))
+plt.xlabel("Risetime values (ns)")
+plt.ylabel("Signal depth (ADC values)")
+plt.show()
