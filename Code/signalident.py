@@ -6,6 +6,7 @@ import pandas as pd
 import random
 import pyfftw
 import probfit
+import statistics
 
 from iminuit import Minuit
 from scipy import signal
@@ -28,7 +29,7 @@ from scipy import stats
 # PMTsignals/Run103-noise-PMT107.root
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run203-PMT78.root"
+file = "E:\PMTsignals\Run203-PMT107.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -272,25 +273,20 @@ for n in range(len(rollingdata)):
             signalvalues.append(onesigvals[i])
 
 
-
-
-
-
-
     print("EVENT " + str(sigevents[n]))
 
-    print("Signal length: " + str(siglength) + "ns")
+    #print("Signal length: " + str(siglength) + "ns")
 
-    print("FWHM: " + str(fwhmlength) + " ns")
+    #print("FWHM: " + str(fwhmlength) + " ns")
 
     # signal depth CODE, take from 0 as mean is untrustable
-    print("Signal depth: " + str(fminvals[n]))
+    #print("Signal depth: " + str(fminvals[n]))
 
 
     # integrated charge CODE
         # from time events, take how much the signal deviated from the mean additively
     intQ = np.sum(signalvalues)
-    print("Integrated charge in ADC value: " + str(intQ))
+    #print("Integrated charge in ADC value: " + str(intQ))
 
 
     # rise time CODE
@@ -300,7 +296,8 @@ for n in range(len(rollingdata)):
     #0.1 and 0.9 components
     flow = fminvals[n]*0.1
     fhigh = fminvals[n]*0.9
-    print("10% and 90% values: " + str(flow) + ", " + str(fhigh))
+    #print("10% and 90% values: " + str(flow) + ", " + str(fhigh))
+
     # list to create rise time
     frisevals = []
     for i in range(len(signalvalues)):
@@ -314,7 +311,7 @@ for n in range(len(rollingdata)):
 
     # Apply time gate, /2 because both sides of wave are considered initially
     risetime = ((np.sum(frisevals))*timegate)/2
-    print("Rise time: " + str(risetime) + "ns")
+    #print("Rise time: " + str(risetime) + "ns")
 
 
     # Apply to lists
@@ -339,3 +336,69 @@ plt.title("Risetime against Height for file " + str(file))
 plt.xlabel("Risetime values (ns)")
 plt.ylabel("Signal depth (ADC values)")
 plt.show()
+
+# Distribution of all variables;
+
+# Length
+plt.hist(siglngthlst,bins = 50)
+plt.title("Signal Length Histogram for file " + str(file))
+plt.ylabel("Count")
+plt.xlabel("Length (ns)")
+plt.show()
+
+# FWHM
+plt.hist(fwhmlst,bins = 25)
+plt.title("FWHM Histogram for file " + str(file))
+plt.ylabel("Count")
+plt.xlabel("Width (ns)")
+plt.show()
+
+# Depth
+plt.hist(sgdpthlst,bins = 50)
+plt.title("Signal Depth Histogram for file " + str(file))
+plt.ylabel("Count")
+plt.xlabel("Depth (ADC Value)")
+plt.show()
+
+# Integrated charge (buggy)
+plt.hist(intchrglst,bins = 50)
+plt.title("Integrated Charge Histogram for file " + str(file))
+plt.ylabel("Count")
+plt.xlabel("Charge (ADC Value)")
+plt.show()
+
+# Risetime
+plt.hist(risetimelst,bins = 25)
+plt.title("Risetime Histogram for file " + str(file))
+plt.ylabel("Count")
+plt.xlabel("Rise time (ns)")
+plt.show()
+
+# Mean and Median values
+print("Mean Values of signals for file " + str(file))
+print("======================")
+print("\n")
+print("Signal Length: " + str(np.mean(siglngthlst)) + "ns")
+
+print("FWHM: " + str(np.mean(fwhmlst)) + "ns")
+
+print("Signal depth: " + str(np.mean(sgdpthlst)) + " ADC value")
+
+print("Integrated charge: " + str(np.mean(intchrglst)) + " ADC value")
+
+print("Rise time: " + str(np.mean(risetimelst)) + "ns")
+print("\n")
+
+
+print("Median Values of signals for file " + str(file))
+print("======================")
+print("\n")
+print("Signal Length: " + str(statistics.median(siglngthlst)) + "ns")
+
+print("FWHM: " + str(statistics.median(fwhmlst)) + "ns")
+
+print("Signal depth: " + str(statistics.median(sgdpthlst)) + " ADC value")
+
+print("Integrated charge: " + str(statistics.median(intchrglst)) + " ADC value")
+
+print("Rise time: " + str(statistics.median(risetimelst)) + "ns")
