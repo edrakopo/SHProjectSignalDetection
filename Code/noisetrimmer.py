@@ -13,12 +13,15 @@ from scipy import signal
 from scipy.fft import rfft, rfftfreq
 from scipy import stats
 
+#collect data
+
 ################ DESCRIPTION
 #
-# Opens up ROOT file, roughly highlights signal events
-# Removes baseline from signal events (complicated)
-# Calculates FT for baseline removed events#
-# Possibly superimpose them
+# Opens up ROOT file
+# Removes baseline and trendline from events
+# Applies butterworth filter to events
+# Applies rolling mean to Events
+# Collects properties of events to determine signals
 ################
 
 
@@ -28,15 +31,16 @@ from scipy import stats
 # PMTsignals/Run103-noise-PMT78.root
 # PMTsignals/Run103-noise-PMT107.root
 
+
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run203-PMT107.root"
+file = "E:\PMTsignals\Run203-PMT78.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
 print(branches['ADC'])
 
 # Move data to less nefarious sounding variable
-data = branches['ADC']
+datafull = branches['ADC']
 
 # how many values in each event
 samples = 150
@@ -50,164 +54,38 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 100000
+y = 10000
+
+# take the y values from data, to stop array index mismatching
+data = datafull[:y]
 
 
+# Find mean
+meanvals = []
+for i in range(y):
+    datarepeated = data[i]
+    # Append data values to list
+    meanvals.append(np.mean(datarepeated))
 
+# Apply baseline subtraction
+scaleddata = fnc.baselinesubtraction(data,meanvals)
 
-
-# First, find signal events, use basic 5sigma method initially, can be changed at later date
-
-# using basic mean/sig finder
-meanvals, stdvals, minvals, maxvals, sigvals, fmedvals = fnc.datacollate(branches['ADC'], y)
-
-print(sigvals)
-
-# Two lists, one for holding signal values, one for holding event number
-sigdata = []
-sigevents = []
-
-
-# Collect signal values
-for k in range(y):
-    if sigvals[k] == 1:
-        sigdata.append(data[k])
-        sigevents.append(k)
-    else:
-        print("No signal")
-
-print("Finding plots")
-
-# Baseline subtraction
-#i=0
-#scaleddata=[]
-#for i in range(len(sigdata)):
-    # remove baseline
-    #print("event " + str(i) + ": \n" + str(branches['ADC'][i]))
-    #print("subtract " + str(c[i]))
-#    scaleddata.append(sigdata[i]-meanvals[i])
-    #print("baseline removed event" + str(i) + ": \n" + str(scaleddata[i]))
-
-# baseline subtraction
-scaleddata = fnc.baselinesubtraction(sigdata,meanvals)
-
-#plt.plot(time,scaleddata[0])
-#plt.xlabel("Sample Time (ns)")
-#plt.ylabel("ADC Value")
-#plt.title(str(file) + " event " + str(sigevents[0]))
-#plt.show()
-
-
-
-# Fourier transform of signal
-
-# Creating variables required for composite
-#dftdata = [None] * len(sigdata)
-#freqdata = pyfftw.interfaces.numpy_fft.rfftfreq(len(time),1/500)
-dfthist = [0] * (samples//2+1)
-
-dftdata,freqdata = fnc.fouriertransformsimple(time, scaleddata, 500, False)
-
-# create FT of all data, and compilation
-for q in range(len(sigdata)):
-    #abs to remove negative components
-    #dftdata[q] = np.abs(pyfftw.interfaces.numpy_fft.rfft(scaleddata[q]))
-    dfthist = np.add(dfthist,dftdata[q])
-
-# plot fourier values, commented out
-#plt.plot(freqdata,dftdata[0])
-#plt.xlabel("Frequency (MHz)")
-#plt.ylabel("Amplitude")
-#plt.title(str(file) + "FT of event " + str(sigevents[0]))
-#plt.show()
-
-# plot fourier values compilation, commented out
-plt.plot(freqdata,dfthist)
-plt.xlabel("Frequency (MHz)")
-plt.ylabel("Amplitude")
-plt.title(str(file) + "FT compilation of event ")
-plt.show()
-
-
-## DISTRIBUTION OF 10TH EVENT WITH SIGNAL
-# Create distribution of 10th event - Trendline/baseline removed
-# filter out signal values (Nonetype right now) from eventdistr
-#lindatasig = []
-#for i in range(0,len(scaleddata)):
-#    lindatasig.append(scaleddata[i])
-#eventdistr = fnc.adcdist(lindatasig,len(lindatasig))
-
-
-
-
-
-
-# looking at butterworth filter, removing everything above 200MHz
-sos = signal.butter(5,200,'lp',fs=500,output='sos')
-
-# FT of butterworth data
+# Butterworth Filter, removing everything above 2000MHz
 filterdata = []
-#filtdftdata = [None] * len(sigdata)
-
-for i in range(len(sigdata)):
+sos = signal.butter(5,200,'lp',fs=500,output='sos')
+# Applying filter to data
+for i in range(y):
     filterdata.append(signal.sosfilt(sos,scaleddata[i]))
-    #filtdftdata[i] = np.abs(pyfftw.interfaces.numpy_fft.rfft(filterdata[i]))
 
-# FT of butterworth filtered data
-filtdftdata = fnc.fouriertransformsimple(time, filterdata, 500, True)
-
-## DISTRIBUTION OF 10TH EVENT WITH SIGNAL - BUTTERWORTH
-# Create distribution of 10th event - Trendline/baseline removed
-# filter out signal values (Nonetype right now) from eventdistr
-#butsig = []
-#for i in range(0,len(filterdata)):
-#    butsig.append(filterdata[i])
-#eventdistr = fnc.adcdist(butsig,len(butsig))
-
-
-# Butterworth Signal Plotting
-plt.plot(time,filterdata[0])
-plt.title("Butterworth Filtered Signal of " + str(file) + " event " + str(sigevents[0]))
-plt.xlabel("Sample Time (ns)")
-plt.ylabel("ADC Value")
-plt.show()
-
-# Fourier Transform Signal Plotting
-plt.plot(freqdata,filtdftdata[0])
-plt.title("Butterworth Fourier Transform of " + str(file) + " event " + str(sigevents[0]))
-plt.xlabel("Frequency (MHz)")
-plt.ylabel("Amplitude")
-plt.show()
-
-# Study components of first signal event (sigevents[0]) will expand to all signal events soon
-# Most likely will be split into functions in functions.py
-
-
-# set up rolling mean
+# Apply rolling mean to data, window of 5 samples currently
 rollingdata = []
 for i in range(len(filterdata)):
     rollingdata.append(fnc.rollmean(filterdata[i],5))
 
-
-n = 0
-
-plt.plot(time,rollingdata[n])
-plt.title("Rolling mean Signal of " + str(file) + " event " + str(sigevents[n]))
-plt.xlabel("Sample Time (ns)")
-plt.ylabel("ADC Value")
-plt.show()
-
-
-# signal length CODE
-    # find the point where the value goes 1sig/2sig/3sig from mean and plot over normal data, figure out what values work!
-    # Then take the amount of time samples from the start to the end
-
-# Recompile meanval for our data
+# Collect new average values for signal properties calculations
 fmeanvals, fstdvals, fminvals, fmaxvals, fsigvals, fmedvals = fnc.datacollate(rollingdata, len(rollingdata))
 
-
-# skip through values in signal events
-# n is which event to take
+# Finding properties of events
 
 # sigma values
 sigmaval = 1
@@ -273,7 +151,7 @@ for n in range(len(rollingdata)):
             signalvalues.append(onesigvals[i])
 
 
-    print("EVENT " + str(sigevents[n]))
+
 
     #print("Signal length: " + str(siglength) + "ns")
 
@@ -402,3 +280,6 @@ print("Signal depth: " + str(statistics.median(sgdpthlst)) + " ADC value")
 print("Integrated charge: " + str(statistics.median(intchrglst)) + " ADC value")
 
 print("Rise time: " + str(statistics.median(risetimelst)) + "ns")
+
+
+# Construct data cutoff point here, remove all values with signal depth > -50 and see how many signals are left
