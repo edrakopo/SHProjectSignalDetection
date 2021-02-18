@@ -88,7 +88,7 @@ fmeanvals, fstdvals, fminvals, fmaxvals, fsigvals, fmedvals = fnc.datacollate(ro
 # Finding properties of events
 
 # sigma values
-sigmaval = 1
+sigmaval = 0
 # lists
 siglngthlst = []
 fwhmlst = []
@@ -283,3 +283,25 @@ print("Rise time: " + str(statistics.median(risetimelst)) + "ns")
 
 
 # Construct data cutoff point here, remove all values with signal depth > -50 and see how many signals are left
+cutdata = []
+cutdepth = []
+# signal depth cut off
+sgdpthcutoff = -50
+
+
+for i1 in range(len(rollingdata)):
+    if (sgdpthlst[i1] < sgdpthcutoff):
+        cutdepth.append(sgdpthlst[i1])
+        cutdata.append(i1)
+
+
+
+# Depth Cut off
+plt.hist(cutdepth,bins = 25)
+plt.title("Signal Depth Histogram for file " + str(file) + " with Cut-off at " + str(sgdpthcutoff))
+plt.ylabel("Count")
+plt.xlabel("Depth (ADC Value)")
+plt.show()
+
+# Take first 210 events
+print(cutdata[:210])
