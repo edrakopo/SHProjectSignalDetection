@@ -102,25 +102,67 @@ for n in range(len(rollingdata)):
     onesigvals = fnc.sigmaevents(rollingdata[n],fmedvals[n],fstdvals[n],sigmaval) # 0 -> fmeanvals[n]
 
     # FWHM code
-    FWHMVAL = (fminvals[n]//2)
+    #FWHMVAL = (fminvals[n]//2)
     # set to timegate due to inaccuracies in valuation, will be tested visually
-    fwhmlength = timegate
+    #fwhmlength = timegate
     # go through all the values of the fit, and find what values are closest to this.
-    for j in range(len(onesigvals)):
+    #for j in range(len(onesigvals)):
         # if rollingdata[i] is larger, and hasn't been detected yet, ignore, if lower and hasn't been detected, mark
-        if (rollingdata[n][j] <= FWHMVAL):
-            fwhmlength += timegate
+    #    if (rollingdata[n][j] <= FWHMVAL):
+    #        fwhmlength += timegate
 
+    # Takes difference from median to minimum value to find maximum of spike
+    difference = fmedvals[n] + fminvals[n]
 
+    # find half minimum (which is half maximum for us)
+    halfmin = difference / 2
+    # find nearest point within the array to half max(min). RETURNS THE ARRAY ELEMENT NUMBER! NOT THE ARRAY VALUE!
+    nearest = (np.abs(rollingdata[n]-halfmin)).argmin()
+    # Once spotted, start counting
+    # count how many events occur between nearest and minimum
+    spotted = 0
+    count = 0
+    for k in range(len(rollingdata[n])):
+        # whichever component it comes into contact first, start the count
+        if (rollingdata[n][k] == fminvals[n]) or (rollingdata[n][k] == rollingdata[n][nearest]):
+            spotted += 1
 
+        # if one component has been spotted, but not the other, keep counting
+        if spotted == 1:
+            count += 1
+
+        # if both components have been spotted
+        if spotted == 2:
+            break
+
+    # Apply length of sample size
+    fwhmlength = 2*count*timegate
+    #print("Event: " + str(n) + "\nFWHM Value: " + str(fwhmlength))
     # plotting purposes
-    fwhmlist = [FWHMVAL] * len(time)
+    #fwhmlist = [FWHMVAL] * len(time)
+    fwhmlist = [halfmin] * len(time)
+
+    # to look at individual values for things ################## FWHM SIGNAL VIEWER ##################
+    #check = 388
+    #if n == check:
+    #    print("Event " + str(388))
+    #    print("halfmin, rollingdata["+str(check)+"][nearest] , fminvals["+str(check)+"], fwhmlength")
+    #    print(halfmin, rollingdata[n][nearest], fminvals[check], fwhmlength)
+    #    plt.plot(time,rollingdata[n], label="Normal")
+    #    plt.plot(time,onesigvals, label=str(sigmaval) + " sigma")
+    #    plt.plot(time,fwhmlist, label="FWHM")
+    #    plt.legend()
+    #    plt.title("Butterworth Rolling Filtered Signal with FWHM of " + str(file) + " event " + str(n))
+    #    plt.xlabel("Sample Time (ns)")
+    #    plt.ylabel("ADC Value")
+    #    plt.show()
+
 
     #plt.plot(time,rollingdata[n], label="Normal")
     #plt.plot(time,onesigvals, label=str(sigmaval) + " sigma")
     #plt.plot(time,fwhmlist, label="FWHM")
     #plt.legend()
-    #plt.title("Butterworth Rolling Filtered Signal of " + str(file) + " event " + str(sigevents[n]))
+    #plt.title("Butterworth Rolling Filtered Signal with FWHM of " + str(file) + " event " + str(n))
     #plt.xlabel("Sample Time (ns)")
     #plt.ylabel("ADC Value")
     #plt.show()
@@ -200,7 +242,7 @@ for n in range(len(rollingdata)):
     risetimelst.append(risetime)
 
 
-# plot height-width
+# plot width-depth
 plt.scatter(fwhmlst,sgdpthlst)
 plt.title("FWHM against Height for file " + str(file))
 plt.xlabel("FWHM values (ns)")
@@ -208,7 +250,7 @@ plt.ylabel("Signal depth (ADC values)")
 plt.show()
 
 
-# plot height-width
+# plot risetime-depth
 plt.scatter(risetimelst,sgdpthlst)
 plt.title("Risetime against Height for file " + str(file))
 plt.xlabel("Risetime values (ns)")
@@ -286,11 +328,14 @@ print("Rise time: " + str(statistics.median(risetimelst)) + "ns")
 cutdata = []
 cutdepth = []
 # signal depth cut off
-sgdpthcutoff = -50
+sgdpthcutoff = -30
+# fwhm cut offs
+fwhmlowerbound = 7.5
+fwhmupperbound = 20.5
 
 
 for i1 in range(len(rollingdata)):
-    if (sgdpthlst[i1] < sgdpthcutoff):
+    if (sgdpthlst[i1] < sgdpthcutoff) and (fwhmlst[i1] < fwhmupperbound) and (fwhmlst[i1] > fwhmlowerbound):
         cutdepth.append(sgdpthlst[i1])
         cutdata.append(i1)
 
@@ -304,4 +349,4 @@ plt.xlabel("Depth (ADC Value)")
 plt.show()
 
 # Take first 210 events
-print(cutdata[:210])
+print(cutdata[:200])
