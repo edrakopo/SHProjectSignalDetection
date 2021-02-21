@@ -33,7 +33,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run203-PMT166.root"
+file = "E:\PMTsignals\Run103-noise-PMT166.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -54,7 +54,7 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 10000
+y = 1000000
 
 # take the y values from data, to stop array index mismatching
 data = datafull[:y]
@@ -83,23 +83,35 @@ for i in range(len(filterdata)):
     rollingdata.append(fnc.rollmean(filterdata[i],5))
 
 # Collect new average values for signal properties calculations
-fmeanvals, fstdvals, fminvals, fmaxvals, fsigvals, fmedvals = fnc.datacollate(rollingdata, len(rollingdata))
+#fmeanvals, fstdvals, fminvals, fmaxvals, fsigvals, fmedvals = fnc.datacollate(rollingdata, len(rollingdata))
+
+# To increase speed, moved this such that it is a much shorter and more concise piece of code
+fminvals = []
+fmedvals = []
+
+# Testing range of y values
+for o in range(y):
+    datarepeater = rollingdata[o]
+    # Append data values to list
+    fminvals.append(np.amin(datarepeater))
+    fmedvals.append(statistics.median(datarepeater))
+
+
+
 
 # Finding properties of events
 
 # sigma values
-sigmaval = 0
+####sigmaval = 0
 # lists
-siglngthlst = []
 fwhmlst = []
 sgdpthlst = []
-intchrglst = []
-risetimelst = []
+
 
 for n in range(len(rollingdata)):
 
 
-    onesigvals = fnc.sigmaevents(rollingdata[n],fmedvals[n],fstdvals[n],sigmaval) # 0 -> fmeanvals[n]
+    ####onesigvals = fnc.sigmaevents(rollingdata[n],fmedvals[n],fstdvals[n],sigmaval) # 0 -> fmeanvals[n]
 
     # FWHM code
     #FWHMVAL = (fminvals[n]//2)
@@ -178,150 +190,9 @@ for n in range(len(rollingdata)):
     #plt.show
 
 
-
-
-
-    # find length of signal, set to 2 for first value not being counted
-    siglength = timegate
-    # 2ns sample length
-    samplelength = timegate
-    # collect signal values for integrated charge
-    signalvalues = []
-    for i in range(len(onesigvals)):
-        if onesigvals[i] != fmedvals[n]: #fmeanvals[n] if onesigvals is changed
-            siglength += samplelength
-            signalvalues.append(onesigvals[i])
-
-
-
-
-    #print("Signal length: " + str(siglength) + "ns")
-
-    #print("FWHM: " + str(fwhmlength) + " ns")
-
-    # signal depth CODE, take from 0 as mean is untrustable
-    #print("Signal depth: " + str(fminvals[n]))
-
-
-    # integrated charge CODE
-        # from time events, take how much the signal deviated from the mean additively
-    intQ = np.sum(signalvalues)
-    #print("Integrated charge in ADC value: " + str(intQ))
-
-
-    # rise time CODE
-        # time to go from 0.1 to 0.9 of signal amplitude (SOMETHING ELSE NEEDED TO BE CALCULATED)
-        # take min value, multiply by 0.1, and 0.9, find how far apart the points are that split the two
-        # on the graph, apply 2ns time window, bobs your uncle
-    #0.1 and 0.9 components
-    flow = fminvals[n]*0.1
-    fhigh = fminvals[n]*0.9
-    #print("10% and 90% values: " + str(flow) + ", " + str(fhigh))
-
-    # list to create rise time
-    frisevals = []
-    for i in range(len(signalvalues)):
-        # if out of rise time range
-        #print(signalvalues[i])
-        if (signalvalues[i] > flow) or (signalvalues[i] < fhigh):
-            frisevals.append(0)
-        # if within rise time range
-        else:
-            frisevals.append(1)
-
-    # Apply time gate, /2 because both sides of wave are considered initially
-    risetime = ((np.sum(frisevals))*timegate)/2
-    #print("Rise time: " + str(risetime) + "ns")
-
-
     # Apply to lists
-    siglngthlst.append(siglength)
     fwhmlst.append(fwhmlength)
     sgdpthlst.append(fminvals[n])
-    intchrglst.append(intQ)
-    risetimelst.append(risetime)
-
-
-# plot width-depth
-plt.scatter(fwhmlst,sgdpthlst)
-plt.title("FWHM against Height for file " + str(file))
-plt.xlabel("FWHM values (ns)")
-plt.ylabel("Signal depth (ADC values)")
-plt.show()
-
-
-# plot risetime-depth
-plt.scatter(risetimelst,sgdpthlst)
-plt.title("Risetime against Height for file " + str(file))
-plt.xlabel("Risetime values (ns)")
-plt.ylabel("Signal depth (ADC values)")
-plt.show()
-
-# Distribution of all variables;
-
-# Length
-plt.hist(siglngthlst,bins = 50)
-plt.title("Signal Length Histogram for file " + str(file))
-plt.ylabel("Count")
-plt.xlabel("Length (ns)")
-plt.show()
-
-# FWHM
-plt.hist(fwhmlst,bins = 25)
-plt.title("FWHM Histogram for file " + str(file))
-plt.ylabel("Count")
-plt.xlabel("Width (ns)")
-plt.show()
-
-# Depth
-plt.hist(sgdpthlst,bins = 50)
-plt.title("Signal Depth Histogram for file " + str(file))
-plt.ylabel("Count")
-plt.xlabel("Depth (ADC Value)")
-plt.show()
-
-# Integrated charge (buggy)
-plt.hist(intchrglst,bins = 50)
-plt.title("Integrated Charge Histogram for file " + str(file))
-plt.ylabel("Count")
-plt.xlabel("Charge (ADC Value)")
-plt.show()
-
-# Risetime
-plt.hist(risetimelst,bins = 25)
-plt.title("Risetime Histogram for file " + str(file))
-plt.ylabel("Count")
-plt.xlabel("Rise time (ns)")
-plt.show()
-
-# Mean and Median values
-#print("Mean Values of signals for file " + str(file))
-#print("======================")
-#print("\n")
-#print("Signal Length: " + str(np.mean(siglngthlst)) + "ns")
-
-#print("FWHM: " + str(np.mean(fwhmlst)) + "ns")
-
-#print("Signal depth: " + str(np.mean(sgdpthlst)) + " ADC value")
-
-#print("Integrated charge: " + str(np.mean(intchrglst)) + " ADC value")
-
-#print("Rise time: " + str(np.mean(risetimelst)) + "ns")
-#print("\n")
-
-
-#print("Median Values of signals for file " + str(file))
-#print("======================")
-#print("\n")
-#print("Signal Length: " + str(statistics.median(siglngthlst)) + "ns")
-
-#print("FWHM: " + str(statistics.median(fwhmlst)) + "ns")
-
-#print("Signal depth: " + str(statistics.median(sgdpthlst)) + " ADC value")
-
-#print("Integrated charge: " + str(statistics.median(intchrglst)) + " ADC value")
-
-#print("Rise time: " + str(statistics.median(risetimelst)) + "ns")
 
 
 # Construct data cutoff point here, remove all values with signal depth > -50 and see how many signals are left
@@ -353,6 +224,3 @@ for i1 in range(len(rollingdata)):
 
 print("Number of signal events detected:")
 print(len(cutdata))
-
-# Take first 210 events
-print(cutdata[:200])
