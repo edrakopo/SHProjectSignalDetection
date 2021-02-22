@@ -5,7 +5,7 @@ import functions as fnc
 
 # Viewing particular event of particular file.
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run203-PMT166.root"
+file = "E:\PMTsignals\Run103-noise-PMT166.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()

@@ -33,7 +33,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run103-noise-PMT166.root"
+file = "E:\PMTsignals\Run103-noise-PMT78.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -54,7 +54,7 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 1000000
+y = 100000
 
 # take the y values from data, to stop array index mismatching
 data = datafull[:y]
@@ -206,7 +206,7 @@ fwhmupperbound = 20.5
 
 
 for i1 in range(len(rollingdata)):
-    if (sgdpthlst[i1] < sgdpthcutoff) and (fwhmlst[i1] < fwhmupperbound) and (fwhmlst[i1] > fwhmlowerbound):
+    if (sgdpthlst[i1] < sgdpthcutoff): #and (fwhmlst[i1] < fwhmupperbound) and (fwhmlst[i1] > fwhmlowerbound):
         #cutdepth.append(sgdpthlst[i1])
         cutdata.append(i1)
     if ((i1%1000) == 0):

@@ -33,7 +33,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run203-PMT166.root"
+file = "E:\PMTsignals\Run103-noise-PMT78.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -54,7 +54,7 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 10000
+y = 100000
 
 # take the y values from data, to stop array index mismatching
 data = datafull[:y]
