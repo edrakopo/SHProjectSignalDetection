@@ -16,36 +16,34 @@ File that holds many functions used throughout the code in an organised manner. 
 
 noiseFT.py
 ----------
-Opens up ROOT file, roughly removes signal events using sigma from the mean
-Finds best straight line best fit for events
-Then removes baseline and trendline from events
-Applies Butterworth transform to these events to remove high frequency noise
+Opens up ROOT file, roughly removes signal events using sigma from the mean.
+Finds best straight line best fit for events.
+Then removes baseline and trendline from events.
+Applies Butterworth transform to these events to remove high frequency noise.
 Calculates FT for baseline-trendline removed events, and adds all FTs across all events to get a general picture of the frequencies dominant in the data.
-Lots of code is commented out of this, as it is the oldest and messiest
+Lots of code is commented out of this, as it is the oldest and messiest.
 
 noisetrimmer.py
 ---------------
-Opens up ROOT file
-Removes baseline and trendline from events
-Applies butterworth filter to events
-Applies rolling mean to Events
-Collects properties of events to determine signals
+Opens up ROOT file. Removes baseline and trendline from events. Applies butterworth filter to events.
+Applies rolling mean to Events.
+Collects properties of events to determine signals.
 (Properties: risetime, FWHM, length, depth)
-Warning! Length only works if you change onesigvals (line102) to have some sort of sigma-from-mean sorting. As it relies on the sigma difference to calculate signal length. (Will be changed)
-Prints distribution of all Properties
+Warning! Length only works if you change onesigvals (line102) to have some sort of sigma-from-mean sorting. As it relies on the sigma difference to calculate signal length. (Will be changed).
+Prints distribution of all Properties.
 
 noisetrimmeropt.py
 ------------------
-For larger data files
-Removes baseline from events
-Removes unneeded property calculations
-Properties Calculated: FWHM and Depth
+For larger data files.
+Removes baseline from events.
+Removes unneeded property calculations.
+Properties Calculated: FWHM and Depth.
 
 roottest.py
 -----------
-OBSOLETE CODE FROM START OF PROJECT
-Only kept due to usefulness of some of the operations within it.
+OBSOLETE CODE FROM START OF PROJECT.
+Only kept due to usefulness of some of the operations within it..
 
 signalident.py
 ---------------
-Works in the same manner as noisetrimmer.py, but only uses signal values (using 1sigma from mean method) to allow for better visualisation of signal property distributions
+Works in the same manner as noisetrimmer.py, but only uses signal values (using 1sigma from mean method) to allow for better visualisation of signal property distributions.
