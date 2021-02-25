@@ -31,6 +31,8 @@ Collects properties of events to determine signals.
 (Properties: risetime, FWHM, length, depth)
 Warning! Length only works if you change onesigvals (line102) to have some sort of sigma-from-mean sorting. As it relies on the sigma difference to calculate signal length. (Will be changed).
 Prints distribution of all Properties.
+Using cutoff parameters, determines possible signal values within the data
+
 
 noisetrimmeropt.py
 ------------------
@@ -38,6 +40,7 @@ For larger data files.
 Removes baseline from events.
 Removes unneeded property calculations.
 Properties Calculated: FWHM and Depth.
+Using cutoff parameters, determines possible signal values within the data
 
 roottest.py
 -----------
