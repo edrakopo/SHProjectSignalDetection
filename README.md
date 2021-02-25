@@ -48,3 +48,4 @@ Only kept due to usefulness of some of the operations within it.
 
 signalident.py
 ---------------
+Works in the same manner as noisetrimmer.py, but only uses signal values (using 1sigma from mean method) to allow for better visualisation of signal property distributions

@@ -82,7 +82,7 @@ print(str(len(branches['ADC'])))
 
 # then use pyFFTW to do fourier transform of our data, possibly FT for multiple events all together (superimposed)
 
-
+# defines how many events you wish to sample across
 y = 100000
 print("Calculating " + str(y) + " events")
 # Collect important values about a certain number of events (y)
