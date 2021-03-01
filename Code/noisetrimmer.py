@@ -33,7 +33,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run103-noise-PMT78.root"
+file = "E:\PMTsignals\Boulby_78_Signal.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -54,7 +54,7 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 100000
+y = 10000
 
 # take the y values from data, to stop array index mismatching
 data = datafull[:y]
@@ -354,5 +354,5 @@ for i1 in range(len(rollingdata)):
 print("Number of signal events detected:")
 print(len(cutdata))
 
-# Take first 210 events
+# Take first 200 events
 print(cutdata[:200])

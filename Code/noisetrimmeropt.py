@@ -22,6 +22,7 @@ from scipy import stats
 # Applies butterworth filter to events
 # Applies rolling mean to Events
 # Collects properties of events to determine signals
+# Shows all signals identified within the list (defined by y)
 ################
 
 
@@ -33,7 +34,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run103-noise-PMT78.root"
+file = "E:\PMTsignals\Boulby_107.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -54,7 +55,7 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 100000
+y = 1000000
 
 # take the y values from data, to stop array index mismatching
 data = datafull[:y]

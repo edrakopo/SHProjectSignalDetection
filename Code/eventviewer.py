@@ -5,7 +5,7 @@ import functions as fnc
 
 # Viewing particular event of particular file.
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run103-noise-PMT166.root"
+file = "E:\PMTsignals\Boulby_78.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -15,7 +15,6 @@ branches = tree.arrays()
 timegate = 2
 # length of event
 eventno = len(branches['ADC'][0])
-
 time = []
 # Creating list for sample times that are 2ns intervals, 150 samples
 for i in range(eventno):

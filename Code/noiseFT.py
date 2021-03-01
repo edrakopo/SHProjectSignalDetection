@@ -32,7 +32,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Boulby_78.root"
+file = "E:\PMTsignals\Boulby_78_Signal.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -52,14 +52,14 @@ for i in range(eventno):
 print("Event number: ")
 print(str(len(branches['ADC'])))
 # Plot the first 50 events
-#for i in range(10000):
+for i in range(10000):
 
-    #datarepeated = branches['ADC'][i]
-    #plt.plot(time,datarepeated)
-    #plt.xlabel("Sample Time (ns)")
-    #plt.ylabel("ADC Value")
-    #plt.title(str(file) + " event " + str(i))
-    #plt.show()
+    datarepeated = branches['ADC'][i]
+    plt.plot(time,datarepeated)
+    plt.xlabel("Sample Time (ns)")
+    plt.ylabel("ADC Value")
+    plt.title(str(file) + " event " + str(i))
+    plt.show()
 
 
 # So we have in the file:
@@ -109,7 +109,9 @@ print("Data collation complete")
 
 
 # Line of best fit, to see modulation in baseline
-pfit, stats, rms, c, m = fnc.linfit(time,branches,y)
+datanew = branches['ADC']
+
+pfit, stats, rms, c, m = fnc.linfit(time,datanew,y)
 # pfit is quite complicated, if given more time at the end REVISE THIS BIT OF CODE to not need c or m, but just pfit
 print("Linear Fitting complete")
 # Create distribution of 10th event - RAW DATA, signal removed
@@ -130,10 +132,11 @@ while True:
         break
 
 
-
+# Apply linear fit over data
 for j in range(len(time)):
     yline.append(m[q]*time[j]+c[q])
 print("Linear Fit Applied")
+
 # Plot line of best fit over data
 plt.plot(time,branches['ADC'][q],color='black',markersize=2)
 plt.plot(time,yline,color='red',linewidth=3)

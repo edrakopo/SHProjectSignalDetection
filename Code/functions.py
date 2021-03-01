@@ -33,7 +33,7 @@ def linfit(x,y,z):
     for i in range(z):
         # Find equation of straight line through data to determine baseline & baseline modulation
 
-        data = y['ADC'][i]
+        data = y[i]
         # https://numpy.org/doc/stable/reference/generated/numpy.polynomial.polynomial.polyfit.html
         Polynomial = np.polynomial.Polynomial
         # Fit to range cmin, cmax
@@ -224,3 +224,205 @@ def rollmean(data,window):
     df_rolling = df.rolling(window,min_periods=1).mean()
     rollingdata = df_rolling['A'].tolist()
     return(rollingdata)
+
+
+
+def LCMS(data):
+    """
+    Use LCMS Algorithm to remove linear trendlines within data.
+    Applies to one event, iterate within a list to apply to all events.
+
+    :param data:        List of sample data (y component)
+    :return:            Array of data with linear trendline removed
+    """
+    # Center time around 0, such that average is 0
+    #time -= np.divide(np.max(time),2)
+    # example of this, 300ns gate
+    # -150 from all components, 0->-150, 300->150
+
+    # Collect sum squared time
+    #timesqsum = np.sum(np.square(time))
+
+    ###### LCMS METHOD #####
+
+    # Collect x values respective to number of y components
+    time = []
+    for p in range(len(data)):
+        time.append(p)
+
+    # First iteration ###################
+
+    # LCMS time centering (which for some reason isn't centered, even though it could be using the above method)
+
+    # All components outwith the w loop are constant throughout the function, due to their relation to x component
+
+    # take division of time component
+    xhalf = np.divide(np.max(time),2)
+    #print("xhalf: " + str(xhalf))
+
+    # Create new basis for time
+    xi = []
+    for j in range(len(time)):
+        xi.append(j - xhalf)
+    #print("xi: " + str(xi))
+
+    # Collect xi^2
+    xisq = np.sum(np.square(xi))
+    #print("xisq: " + str(xisq))
+
+
+    for w in range(1):
+
+        # Baseline subtraction
+        y = np.mean(data)
+        a = data - y
+
+        # Collect summed slope component
+        slope = 0
+        for i in range(len(a)):
+            slope += (i - xhalf)*a[i]
+
+        # Slope Calculation
+        s = (1/xisq)*slope
+
+        # apply new common-mode removed data to be reused in second loop
+        data = []
+        for k in range(len(a)):
+            # Different CM subtractions based on whether first or second iteration
+            if w == 0: # First iteration
+                data.append(a[k]-s*(k-xhalf))
+            if w == 1: # Second iteration
+                data.append(a[k]-s*(k-xhalf)-y)
+
+    # Return new data
+    return(data)
+
+
+def LCMSfast(data,xhalf,xi):
+    """
+    Use LCMS Algorithm to remove linear trendlines within data.
+    Applies to one event, iterate within a list to apply to all events.
+
+    Faster method, due to the x axis appropriate for this function
+    being determined outwith the function. Please look at
+    https://inspirehep.net/literature/928989 for more guidance on
+    more guidance on this issue, where xi is xi and xhalf is
+    equivalent to 16 from section 2.2.
+
+    :param data:        List of sample data (y component)
+    :param xhalf:       Half the largest value in the x components
+    :param xi:          New x axis based on xhalf, in which each point is one entry on the y axis
+    :return:            Array of data with linear trendline removed
+    """
+    # Center time around 0, such that average is 0
+    #time -= np.divide(np.max(time),2)
+    # example of this, 300ns gate
+    # -150 from all components, 0->-150, 300->150
+
+    # Collect sum squared time
+    #timesqsum = np.sum(np.square(time))
+
+    ###### LCMS METHOD #####
+
+    # Collect xi^2
+    xisq = np.sum(np.square(xi))
+    #print("xisq: " + str(xisq))
+
+
+    for w in range(1):
+
+        # Baseline subtraction
+        y = np.mean(data)
+        a = data - y
+
+        # Collect summed slope component
+        slope = 0
+        for i in range(len(a)):
+            slope += (i - xhalf)*a[i]
+
+        # Slope Calculation
+        s = (1/xisq)*slope
+
+        # apply new common-mode removed data to be reused in second loop
+        data = []
+        for k in range(len(a)):
+            # Different CM subtractions based on whether first or second iteration
+            if w == 0: # First iteration
+                data.append(a[k]-s*(k-xhalf))
+            if w == 1: # Second iteration
+                data.append(a[k]-s*(k-xhalf)-y)
+
+    # Return new data
+    return(data)
+
+
+def LCMSlist(datas):
+    """
+    Use LCMS Algorithm to remove linear trendlines within data.
+    Applies to a list of events. Fastest method out of all LCMS methods
+
+    :param data:        Array of events
+    :return:            Array of events with linear trendline removed
+    """
+
+    ###### LCMS METHOD #####
+    # Abstraction from argument to allow for modification
+    dataz = datas
+
+    # All components outwith the w loop are constant throughout the function, due to their relation to x component
+
+    # Collect x values respective to number of y components
+    time = []
+    for p in range(len(dataz[0])):
+        time.append(p)
+
+    # take division of time component
+    xhalf = np.divide(np.max(time),2)
+    #print("xhalf: " + str(xhalf))
+
+    # Create new basis for time
+    xi = []
+    for j in range(len(time)):
+        xi.append(j - xhalf)
+    #print("xi: " + str(xi))
+
+    # Collect xi^2
+    xisq = np.sum(np.square(xi))
+    #print("xisq: " + str(xisq))
+
+
+    # loop across multiple events and apply to datafn
+    datafn = []
+    for o in range(len(dataz)):
+
+        data = dataz[o]
+
+        for w in range(1):
+
+            # Baseline subtraction
+            y = np.mean(data)
+            a = data - y
+
+            # Collect summed slope component
+            slope = 0
+            for i in range(len(a)):
+                slope += (i - xhalf)*a[i]
+
+            # Slope Calculation
+            s = (1/xisq)*slope
+
+            # apply new common-mode removed data to be reused in second loop
+            data = []
+            for k in range(len(a)):
+                # Different CM subtractions based on whether first or second iteration
+                if w == 0: # First iteration
+                    data.append(a[k]-s*(k-xhalf))
+                if w == 1: # Second iteration
+                    data.append(a[k]-s*(k-xhalf)-y)
+
+        # append list
+        datafn.append(data)
+
+
+    # Return new data
+    return(datafn)
