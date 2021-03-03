@@ -23,6 +23,11 @@ Applies Butterworth transform to these events to remove high frequency noise.
 Calculates FT for baseline-trendline removed events, and adds all FTs across all events to get a general picture of the frequencies dominant in the data.
 Lots of code is commented out of this, as it is the oldest and messiest.
 
+
+noiseFTLCMS.py
+--------------
+Functions much the same as noiseFT.py, but instead of using baselinesubtraction and LINFIT, uses LCMS, so determine if the trendline removal has any impact on the Fourier representation of our data.
+
 noisetrimmer.py
 ---------------
 Opens up ROOT file. Removes baseline and trendline from events. Applies butterworth filter to events.
@@ -51,3 +56,8 @@ Only kept due to usefulness of some of the operations within it..
 signalident.py
 ---------------
 Works in the same manner as noisetrimmer.py, but only uses signal values (using 1sigma from mean method) to allow for better visualisation of signal property distributions.
+
+
+LCMStest.py
+-----------
+Testing the different LCMS trendline removal functions against the linfit function to see what is faster.

@@ -32,7 +32,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Boulby_78_Signal.root"
+file = "E:\PMTsignals\Run103-noise-PMT78.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -52,14 +52,14 @@ for i in range(eventno):
 print("Event number: ")
 print(str(len(branches['ADC'])))
 # Plot the first 50 events
-for i in range(10000):
+#for i in range(10000):
 
-    datarepeated = branches['ADC'][i]
-    plt.plot(time,datarepeated)
-    plt.xlabel("Sample Time (ns)")
-    plt.ylabel("ADC Value")
-    plt.title(str(file) + " event " + str(i))
-    plt.show()
+#    datarepeated = branches['ADC'][i]
+#    plt.plot(time,datarepeated)
+#    plt.xlabel("Sample Time (ns)")
+#    plt.ylabel("ADC Value")
+#    plt.title(str(file) + " event " + str(i))
+#    plt.show()
 
 
 # So we have in the file:
@@ -233,12 +233,10 @@ plt.show()
 dfthist = [0] * len(dftdata[q])
 
 for i in range(y):
-    # ensure no signal collected for now
-    if sigvals[i] == 0:
-        # create fourier transform here
-        dftdata[i] = pyfftw.interfaces.numpy_fft.rfft(lindata[i])
-        # add to summation array
-        dfthist = np.add(dfthist,dftdata[i])
+    # create fourier transform here
+    dftdata[i] = pyfftw.interfaces.numpy_fft.rfft(lindata[i])
+    # add to summation array
+    dfthist = np.add(dfthist,dftdata[i])
 
 plt.plot(freqdata[q],np.abs((dfthist).imag))
 plt.xlabel("Sample Frequency (MHz)")
