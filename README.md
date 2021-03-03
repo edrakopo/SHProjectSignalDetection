@@ -37,10 +37,11 @@ Using cutoff parameters, determines possible signal values within the data
 noisetrimmeropt.py
 ------------------
 For larger data files.
-Removes baseline from events.
+Removes baseline and trendline from events using LCMS algorithm.
 Removes unneeded property calculations.
 Properties Calculated: FWHM and Depth.
-Using cutoff parameters, determines possible signal values within the data
+Using cutoff parameters, determines possible signal values within the data.
+Calculates the number of signal events found within range determined by Y
 
 roottest.py
 -----------
