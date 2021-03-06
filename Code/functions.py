@@ -5,6 +5,9 @@ import pyfftw
 import pandas as pd
 import statistics
 
+# For writing pydoc
+# py -m pydoc -w functions
+
 
 # Linear Fit
 def linfit(x,y,z):
@@ -305,14 +308,14 @@ def LCMSfast(data,xhalf,xi):
 
     Faster method, due to the x axis appropriate for this function
     being determined outwith the function. Please look at
-    https://inspirehep.net/literature/928989 for more guidance on
+    https://inspirehep.net/literature/928989
     more guidance on this issue, where xi is xi and xhalf is
     equivalent to 16 from section 2.2.
 
     :param data:        List of sample data (y component)
     :param xhalf:       Half the largest value in the x components
     :param xi:          New x axis based on xhalf, in which each point is one entry on the y axis
-    :return:            Array of data with linear trendline removed
+    :return datafn:     Array of data with linear trendline removed
     """
     # Center time around 0, such that average is 0
     #time -= np.divide(np.max(time),2)
@@ -362,7 +365,7 @@ def LCMSlist(datas):
     Applies to a list of events. Fastest method out of all LCMS methods
 
     :param data:        Array of events
-    :return:            Array of events with linear trendline removed
+    :return datafn:     Array of events with linear trendline removed
     """
 
     ###### LCMS METHOD #####
@@ -426,3 +429,107 @@ def LCMSlist(datas):
 
     # Return new data
     return(datafn)
+
+def signalspotter(data, timegate, depthcutoff, fwhmcutoff):
+    """
+    Collects data given, and the cutoff values required.
+    Calculates the FWHM and depth of all events.
+    Determines if events are signals based on cutoff values.
+    Returns the number of signals spotted and a list of signals events.
+
+    :param data:                    Array of events
+    :param timegate:                Length of time between each recorded sample (eg: 2ns -> 2)
+    :param depthcutoff:             Value for signal depth cutoff
+    :param fwhmcutoff:              Upper and Lower bounds for FWHM cutoff, written as (LB,UB)
+    :return signalno, signallist:   List of the signal event numbers, as well as the signal events themselves
+    """
+    # Determine event list length
+    eventno = len(data)
+
+    # Declare minimum and median values for all events
+    fminvals = []
+    fmedvals = []
+
+    # Using timegate, and event length. Create array of time variables
+
+
+
+    # Collecting minimum and median for property evaluation
+    for o in range(eventno):
+        # select individual data points
+        datarepeater = data[o]
+        # Append data values to list
+        fminvals.append(np.amin(datarepeater))
+        fmedvals.append(statistics.median(datarepeater))
+
+
+    # Finding properties of events
+
+    # lists
+    fwhmlst = []
+    sgdpthlst = []
+
+
+    for n in range(eventno):
+
+        # FWHM FINDING
+
+        # Takes difference from median to minimum value to find maximum of spike
+        # Positive because fminvals is always negative, and median is basically 0 in every case
+        # This could be altered to be better.
+        difference = fmedvals[n] + fminvals[n]
+
+        # find half minimum (which is half maximum for us)
+        halfmin = difference / 2
+        # find nearest point within the array to half max(min). RETURNS THE ARRAY ELEMENT NUMBER! NOT THE ARRAY VALUE!
+        nearest = (np.abs(data[n]-halfmin)).argmin()
+        # Once spotted, start counting
+        # count how many events occur between nearest and minimum
+        spotted = 0
+        count = 0
+        for k in range(eventno):
+            # whichever component it comes into contact first, start the count
+            if (data[n][k] == fminvals[n]) or (data[n][k] == data[n][nearest]):
+                spotted += 1
+
+            # if one component has been spotted, but not the other, keep counting
+            if spotted == 1:
+                count += 1
+
+            # if both components have been spotted
+            if spotted == 2:
+                break
+
+        # Apply length of sample size
+        fwhmlength = 2*count*timegate
+        #print("Event: " + str(n) + "\nFWHM Value: " + str(fwhmlength))
+        # plotting purposes
+        #fwhmlist = [FWHMVAL] * len(time)
+        fwhmlist = [halfmin] * len(data[0])
+
+        # Signal depth finding is very simple, as it requires just the lowest value within the event (not 100% true, but true for our linearised, smoothed data)
+
+        # Apply property to lists
+        fwhmlst.append(fwhmlength)
+        # [n] applied here as fminvals is already an array that covers all events
+        sgdpthlst.append(fminvals[n])
+
+    # Signal spotting
+
+    # Collating important variables before runtime
+    cutdata = []
+    datanumber = []
+    sgdpthcutoff = depthcutoff
+    fwhmlowerbound, fwhmupperbound = fwhmcutoff
+
+    # If event passes the cutoff, select the event in its entirety as well as the number of the event
+    for i1 in range(eventno):
+        if (sgdpthlst[i1] < sgdpthcutoff) and (fwhmlst[i1] < fwhmupperbound) and (fwhmlst[i1] > fwhmlowerbound):
+            cutdata.append(data[i1])
+            datanumber.append(i1)
+
+    print("Number of signal events detected")
+    print(len(datanumber))
+
+    # Return the number of each signal event, as well as all the data from each event
+    return(datanumber, cutdata)

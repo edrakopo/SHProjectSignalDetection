@@ -32,7 +32,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run103-noise-PMT78.root"
+file = "E:\PMTsignals\Boulby_78_After.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -52,14 +52,14 @@ for i in range(eventno):
 print("Event number: ")
 print(str(len(branches['ADC'])))
 # Plot the first 50 events
-#for i in range(10000):
+for i in range(10000):
 
-#    datarepeated = branches['ADC'][i]
-#    plt.plot(time,datarepeated)
-#    plt.xlabel("Sample Time (ns)")
-#    plt.ylabel("ADC Value")
-#    plt.title(str(file) + " event " + str(i))
-#    plt.show()
+    datarepeated = branches['ADC'][i]
+    plt.plot(time,datarepeated)
+    plt.xlabel("Sample Time (ns)")
+    plt.ylabel("ADC Value")
+    plt.title(str(file) + " event " + str(i))
+    plt.show()
 
 
 # So we have in the file:
