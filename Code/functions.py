@@ -4,9 +4,43 @@ import math as m
 import pyfftw
 import pandas as pd
 import statistics
+import uproot
+
+from scipy import signal
+from scipy import signal
+from scipy.fft import rfft, rfftfreq
+from scipy import stats
+
 
 # For writing pydoc
 # py -m pydoc -w functions
+
+# File Opening
+def rootopen(file):
+    """
+    Opens a root file and pulls the appropriate data into an array, for easier use.
+    data is now an array of all the events, in which sample data is held.
+    Returns the event data.
+    -> file
+        -> Tree
+            -> branches
+                -> ['ADC']
+                    -> [Events 0...n]
+
+    Example usage;
+    datafull = fnc.rootopen("E:\PMTsignals\Run203-PMT78.root")
+
+    :param root file:
+    :return data:
+    """
+    tree = uproot.open(file)["Tree"]
+    branches = tree.arrays()
+
+
+    # Move data to less nefarious sounding variable
+    datafull = branches['ADC']
+
+    return(datafull)
 
 
 # Linear Fit
@@ -17,10 +51,16 @@ def linfit(x,y,z):
     WARNING - Only applies to branches['ADC'][i], as hardcoded into 'data' variable.
               If you want this to change, you can alter it within the code on line 33
 
-    :param x: x values
-    :param y: y values
-    :parad z: number of events found
-    :return: fitting parameters(offset value, gradient value), stats(residuals, rank, singular values of matrix, rcond), root mean square residual value
+    OBSOLETE - This and baselinesubtraction have both been replaced by function LCMS
+
+    :param x:           x values
+    :param y:           y values
+    :parad z:           number of events found
+    :return pfit:       fitting parameters(offset value, gradient value)
+    :return stats:      stats(residuals, rank, singular values of matrix, rcond)
+    :return rms:        root mean square residual value
+    :return c:          offset
+    :return m:          mean
     """
     # time and anything related can be declared outwith the loop, it is unchanging
     time = x
@@ -165,6 +205,8 @@ def baselinesubtraction(data,mean):
     """
     Takes data and mean value, and removes the baseline from all data passed in.
     Returns array of data with baseline removed
+
+    OBSOLETE - This and LINFIT have both been replaced by function LCMS
 
     :param data:        Array of event data
     :param mean:        Array of all mean across all Events
@@ -423,6 +465,8 @@ def LCMSlist(datas):
                 if w == 1: # Second iteration
                     data.append(a[k]-s*(k-xhalf)-y)
 
+        if (o%(len(dataz)/50)==0):
+            print(o)
         # append list
         datafn.append(data)
 
@@ -533,3 +577,65 @@ def signalspotter(data, timegate, depthcutoff, fwhmcutoff):
 
     # Return the number of each signal event, as well as all the data from each event
     return(datanumber, cutdata)
+
+
+def scaledata(data, butterfreq, rollingwindow, lcms, butter, rolling):
+    """
+    Collects the standard signal data, and applies the different effects to the events
+    to improve the ability to identify key components.
+
+    Effects are:
+    -LCMS pedestal and trendline removal
+    -Butterworth low-pass frequency filter
+    -Rolling mean across event data
+
+    Includes modifiable butterworth frequency value, and rolling mean window size.
+
+    :param data:            Array of events
+    :param butterfreq:      Integer for the frequency limit of the butterworth filter (MHz)
+    :param rollingwindow:   Integer for size of rolling mean window
+    :param lcms:            Bool for whether LCMS is applied
+    :param butter:          Bool for whether butterworth filter is applied
+    :param rolling:         Bool for whether rolling mean is applied
+
+    :return scaleddata:    Data with corresponding effects applied appropriately
+    """
+
+    # Length of data sample, used for loops
+    y = len(data)
+
+    # LCMS APPLICATION
+    if (lcms == True):
+        # Cost of forming a new full list is the memory issues that come with it.
+        # The positive is that it runs faster than reapplying the function to all events over a list.
+        scaleddata = LCMSlist(data)
+        print("LCMS Algorithm applied...")
+    else:
+        print("Skipping LCMS Algorithm...")
+
+    # BUTTERWORTH APPLICATION
+    if (butter == True):
+        # Creating the butterworth filter
+        sos = signal.butter(5,butterfreq,'lp',fs=500,output='sos')
+        # Applying filter to data
+        for i in range(y):
+            newdata = signal.sosfilt(sos,scaleddata[i])
+            scaleddata[i] = newdata
+        print("Butterworth Filter Applied at " + str(butterfreq) + " MHz...")
+    else:
+        print("Skipping Butterworth Filter...")
+
+    # ROLLING MEAN APPLICATION
+    if (rolling == True):
+        for i in range(len(scaleddata)):
+            newerdata = rollmean(scaleddata[i],rollingwindow)
+            scaleddata[i] = newerdata
+        print("Rolling Mean Applied...")
+    else:
+        print("Skipping Rolling Mean...")
+
+    # If no modification to our data has been applied, write exception
+    try:
+        return(scaleddata)
+    except:
+        raise ValueError("No modifications were chosen. Please choose one modification to apply to your data.")

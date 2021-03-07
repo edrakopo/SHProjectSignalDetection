@@ -36,16 +36,8 @@ import xlsxwriter
 # PMTsignals/Run103-noise-PMT78.root
 # PMTsignals/Run103-noise-PMT107.root
 
-
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run103-noise-PMT78.root"
-
-tree = uproot.open(file)["Tree"]
-branches = tree.arrays()
-print(branches['ADC'])
-
-# Move data to less nefarious sounding variable
-datafull = branches['ADC']
+datafull = fnc.rootopen("E:\PMTsignals\Run203-PMT78.root")
 
 # how many values in each event
 samples = 150
@@ -59,18 +51,10 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 100000
+y = 1000
 
 # take the y values from data, to stop array index mismatching
 data = datafull[:y]
-
-
-# Find mean OBSOLETE, ONLY USE IF USING SIGMAEVENTS CODE
-#meanvals = []
-#for i in range(y):
-#    datarepeated = data[i]
-    # Append data values to list
-#    meanvals.append(np.mean(datarepeated))
 
 # timing each process
 t0 = process_time()
@@ -118,9 +102,6 @@ for i in range(len(scaleddata)):
 t5 = process_time()
 totalrolling = t5-t4
 print("[3/4] Rolling Mean Applied. Runtime: " + str(totalrolling) + "s")
-
-# Collect new average values for signal properties calculations
-#fmeanvals, fstdvals, fminvals, fmaxvals, fsigvals, fmedvals = fnc.datacollate(rollingdata, len(rollingdata))
 
 # timing each process
 t6 = process_time()

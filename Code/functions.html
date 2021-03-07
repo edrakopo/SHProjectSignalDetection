@@ -19,10 +19,13 @@
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="math.html">math</a><br>
 <a href="numpy.html">numpy</a><br>
-</td><td width="25%" valign=top><a href="pandas.html">pandas</a><br>
-<a href="matplotlib.pyplot.html">matplotlib.pyplot</a><br>
-</td><td width="25%" valign=top><a href="pyfftw.html">pyfftw</a><br>
-<a href="statistics.html">statistics</a><br>
+<a href="pandas.html">pandas</a><br>
+</td><td width="25%" valign=top><a href="matplotlib.pyplot.html">matplotlib.pyplot</a><br>
+<a href="pyfftw.html">pyfftw</a><br>
+<a href="scipy.signal.html">scipy.signal</a><br>
+</td><td width="25%" valign=top><a href="statistics.html">statistics</a><br>
+<a href="scipy.stats.html">scipy.stats</a><br>
+<a href="uproot.html">uproot</a><br>
 </td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#eeaa77">
@@ -63,6 +66,8 @@ Then&nbsp;creating&nbsp;histogram&nbsp;of&nbsp;the&nbsp;samples,&nbsp;and&nbsp;r
  <dl><dt><a name="-baselinesubtraction"><strong>baselinesubtraction</strong></a>(data, mean)</dt><dd><tt>Takes&nbsp;data&nbsp;and&nbsp;mean&nbsp;value,&nbsp;and&nbsp;removes&nbsp;the&nbsp;baseline&nbsp;from&nbsp;all&nbsp;data&nbsp;passed&nbsp;in.<br>
 Returns&nbsp;array&nbsp;of&nbsp;data&nbsp;with&nbsp;baseline&nbsp;removed<br>
 &nbsp;<br>
+OBSOLETE&nbsp;-&nbsp;This&nbsp;and&nbsp;LINFIT&nbsp;have&nbsp;both&nbsp;been&nbsp;replaced&nbsp;by&nbsp;function&nbsp;LCMS<br>
+&nbsp;<br>
 :param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;event&nbsp;data<br>
 :param&nbsp;mean:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;all&nbsp;mean&nbsp;across&nbsp;all&nbsp;Events<br>
 :return&nbsp;scaleddata:&nbsp;Array&nbsp;of&nbsp;event&nbsp;data&nbsp;baseline&nbsp;removed</tt></dd></dl>
@@ -93,16 +98,54 @@ Returns&nbsp;the&nbsp;numpy&nbsp;array&nbsp;of&nbsp;the&nbsp;y&nbsp;axis&nbsp;po
 WARNING&nbsp;-&nbsp;Only&nbsp;applies&nbsp;to&nbsp;branches['ADC'][i],&nbsp;as&nbsp;hardcoded&nbsp;into&nbsp;'data'&nbsp;variable.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;you&nbsp;want&nbsp;this&nbsp;to&nbsp;change,&nbsp;you&nbsp;can&nbsp;alter&nbsp;it&nbsp;within&nbsp;the&nbsp;code&nbsp;on&nbsp;line&nbsp;33<br>
 &nbsp;<br>
-:param&nbsp;x:&nbsp;x&nbsp;values<br>
-:param&nbsp;y:&nbsp;y&nbsp;values<br>
-:parad&nbsp;z:&nbsp;number&nbsp;of&nbsp;events&nbsp;found<br>
-:return:&nbsp;fitting&nbsp;parameters(offset&nbsp;value,&nbsp;gradient&nbsp;value),&nbsp;stats(residuals,&nbsp;rank,&nbsp;singular&nbsp;values&nbsp;of&nbsp;matrix,&nbsp;rcond),&nbsp;root&nbsp;mean&nbsp;square&nbsp;residual&nbsp;value</tt></dd></dl>
+OBSOLETE&nbsp;-&nbsp;This&nbsp;and&nbsp;baselinesubtraction&nbsp;have&nbsp;both&nbsp;been&nbsp;replaced&nbsp;by&nbsp;function&nbsp;LCMS<br>
+&nbsp;<br>
+:param&nbsp;x:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;values<br>
+:param&nbsp;y:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;values<br>
+:parad&nbsp;z:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;of&nbsp;events&nbsp;found<br>
+:return&nbsp;pfit:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fitting&nbsp;parameters(offset&nbsp;value,&nbsp;gradient&nbsp;value)<br>
+:return&nbsp;stats:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stats(residuals,&nbsp;rank,&nbsp;singular&nbsp;values&nbsp;of&nbsp;matrix,&nbsp;rcond)<br>
+:return&nbsp;rms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;mean&nbsp;square&nbsp;residual&nbsp;value<br>
+:return&nbsp;c:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offset<br>
+:return&nbsp;m:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mean</tt></dd></dl>
  <dl><dt><a name="-rollmean"><strong>rollmean</strong></a>(data, window)</dt><dd><tt>Takes&nbsp;data,&nbsp;and&nbsp;the&nbsp;window&nbsp;size.<br>
 Returns&nbsp;the&nbsp;rolling&nbsp;mean&nbsp;data<br>
 &nbsp;<br>
 :param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;data&nbsp;Values<br>
 :param&nbsp;window:&nbsp;&nbsp;Size&nbsp;of&nbsp;window<br>
 :return:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;rolling&nbsp;mean&nbsp;values</tt></dd></dl>
+ <dl><dt><a name="-rootopen"><strong>rootopen</strong></a>(file)</dt><dd><tt>Opens&nbsp;a&nbsp;root&nbsp;file&nbsp;and&nbsp;pulls&nbsp;the&nbsp;appropriate&nbsp;data&nbsp;into&nbsp;an&nbsp;array,&nbsp;for&nbsp;easier&nbsp;use.<br>
+data&nbsp;is&nbsp;now&nbsp;an&nbsp;array&nbsp;of&nbsp;all&nbsp;the&nbsp;events,&nbsp;in&nbsp;which&nbsp;sample&nbsp;data&nbsp;is&nbsp;held.<br>
+Returns&nbsp;the&nbsp;event&nbsp;data.<br>
+-&gt;&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;Tree<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;branches<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;['ADC']<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;[Events&nbsp;0...n]<br>
+&nbsp;<br>
+Example&nbsp;usage;<br>
+datafull&nbsp;=&nbsp;fnc.<a href="#-rootopen">rootopen</a>("E:\PMTsignals\Run203-PMT78.root")<br>
+&nbsp;<br>
+:param&nbsp;root&nbsp;file:<br>
+:return&nbsp;data:</tt></dd></dl>
+ <dl><dt><a name="-scaledata"><strong>scaledata</strong></a>(data, butterfreq, rollingwindow, lcms, butter, rolling)</dt><dd><tt>Collects&nbsp;the&nbsp;standard&nbsp;signal&nbsp;data,&nbsp;and&nbsp;applies&nbsp;the&nbsp;different&nbsp;effects&nbsp;to&nbsp;the&nbsp;events<br>
+to&nbsp;improve&nbsp;the&nbsp;ability&nbsp;to&nbsp;identify&nbsp;key&nbsp;components.<br>
+&nbsp;<br>
+Effects&nbsp;are:<br>
+-LCMS&nbsp;pedestal&nbsp;and&nbsp;trendline&nbsp;removal<br>
+-Butterworth&nbsp;low-pass&nbsp;frequency&nbsp;filter<br>
+-Rolling&nbsp;mean&nbsp;across&nbsp;event&nbsp;data<br>
+&nbsp;<br>
+Includes&nbsp;modifiable&nbsp;butterworth&nbsp;frequency&nbsp;value,&nbsp;and&nbsp;rolling&nbsp;mean&nbsp;window&nbsp;size.<br>
+&nbsp;<br>
+:param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;events<br>
+:param&nbsp;butterfreq:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integer&nbsp;for&nbsp;the&nbsp;frequency&nbsp;limit&nbsp;of&nbsp;the&nbsp;butterworth&nbsp;filter&nbsp;(MHz)<br>
+:param&nbsp;rollingwindow:&nbsp;&nbsp;&nbsp;Integer&nbsp;for&nbsp;size&nbsp;of&nbsp;rolling&nbsp;mean&nbsp;window<br>
+:param&nbsp;lcms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bool&nbsp;for&nbsp;whether&nbsp;LCMS&nbsp;is&nbsp;applied<br>
+:param&nbsp;butter:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bool&nbsp;for&nbsp;whether&nbsp;butterworth&nbsp;filter&nbsp;is&nbsp;applied<br>
+:param&nbsp;rolling:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bool&nbsp;for&nbsp;whether&nbsp;rolling&nbsp;mean&nbsp;is&nbsp;applied<br>
+&nbsp;<br>
+:return&nbsp;scaleddata:&nbsp;&nbsp;&nbsp;&nbsp;Data&nbsp;with&nbsp;corresponding&nbsp;effects&nbsp;applied&nbsp;appropriately</tt></dd></dl>
  <dl><dt><a name="-sigmaevents"><strong>sigmaevents</strong></a>(data, meanval, stdval, x)</dt><dd><tt>Takes&nbsp;data&nbsp;from&nbsp;one&nbsp;event&nbsp;and&nbsp;checks&nbsp;what&nbsp;values&nbsp;are&nbsp;beyong&nbsp;X&nbsp;sigma&nbsp;of&nbsp;the&nbsp;mean.<br>
 Returns&nbsp;list&nbsp;of&nbsp;these&nbsp;Values,&nbsp;with&nbsp;all&nbsp;values&nbsp;not&nbsp;beyond&nbsp;sigma&nbsp;set&nbsp;at&nbsp;mean.<br>
 &nbsp;<br>
