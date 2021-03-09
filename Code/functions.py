@@ -466,7 +466,7 @@ def LCMSlist(datas):
                     data.append(a[k]-s*(k-xhalf)-y)
 
         if (o%(len(dataz)/50)==0):
-            print(o)
+            print("LCMS processing: " + str(o) + "/"  + str(len(dataz)))
         # append list
         datafn.append(data)
 
@@ -504,8 +504,7 @@ def signalspotter(data, timegate, depthcutoff, fwhmcutoff):
         datarepeater = data[o]
         # Append data values to list
         fminvals.append(np.amin(datarepeater))
-        fmedvals.append(statistics.median(datarepeater))
-
+        fmedvals.append(np.median(datarepeater))
 
     # Finding properties of events
 
@@ -557,7 +556,6 @@ def signalspotter(data, timegate, depthcutoff, fwhmcutoff):
         fwhmlst.append(fwhmlength)
         # [n] applied here as fminvals is already an array that covers all events
         sgdpthlst.append(fminvals[n])
-
     # Signal spotting
 
     # Collating important variables before runtime
