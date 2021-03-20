@@ -83,7 +83,7 @@ print(str(len(branches['ADC'])))
 # then use pyFFTW to do fourier transform of our data, possibly FT for multiple events all together (superimposed)
 
 # defines how many events you wish to sample across
-y = 100000
+y = (len(branches['ADC']))
 print("Calculating " + str(y) + " events")
 
 
@@ -108,8 +108,10 @@ for i in range(y):
     # add to summation array
     dfthist = np.add(dfthist,dftdata[i])
 
-plt.plot(freqdata,np.abs((dfthist).imag))
-plt.xlabel("Sample Frequency (MHz)")
-plt.ylabel("Amplitude")
-plt.title("Fourier Transform of all events (additive) of file " + str(file))
+plt.plot(freqdata,np.abs((dfthist)), linewidth = 2)
+plt.xlabel("Sample Frequency (MHz)", fontsize = 17)
+plt.ylabel("Amplitude", fontsize = 17)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
+plt.title("Additive Fourier Transforms for " + str(file), fontsize = 20)
 plt.show()

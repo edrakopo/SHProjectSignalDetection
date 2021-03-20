@@ -32,7 +32,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Boulby_78_After.root"
+file = "E:\PMTsignals\Boulby_78.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -138,12 +138,12 @@ for j in range(len(time)):
 print("Linear Fit Applied")
 
 # Plot line of best fit over data
-plt.plot(time,branches['ADC'][q],color='black',markersize=2)
-plt.plot(time,yline,color='red',linewidth=3)
-plt.xlabel("Sample Time (ns)")
-plt.ylabel("ADC Value")
-plt.title("Trendline of " + str(file) + " event " + str(q) )
-plt.show()
+#plt.plot(time,branches['ADC'][q],color='black',markersize=2)
+#plt.plot(time,yline,color='red',linewidth=3)
+#plt.xlabel("Sample Time (ns)")
+#plt.ylabel("ADC Value")
+#plt.title("Trendline of " + str(file) + " event " + str(q) )
+#plt.show()
 
 
 ############# BASELINE/LINEAR TREND REMOVAL ###############
@@ -188,14 +188,14 @@ print("Completed Trendline Removal")
 
 
 # To ensure its not a signal variable
-if sigvals[q] == 0:
+#if sigvals[q] == 0:
 
     # Plot trendline/baseline removed data
-    plt.plot(time,lindata[q],color='black',markersize=2)
-    plt.xlabel("Sample Time (ns)")
-    plt.ylabel("ADC Value")
-    plt.title("Trendline and Baseline removed " + str(file) + " event " + str(q) )
-    plt.show()
+#    plt.plot(time,lindata[q],color='black',markersize=2)
+#    plt.xlabel("Sample Time (ns)")
+#    plt.ylabel("ADC Value")
+#    plt.title("Trendline and Baseline removed " + str(file) + " event " + str(q) )
+#    plt.show()
 
 # Create distribution of 10th event - Trendline/baseline removed
 # filter out signal values (Nonetype right now) from eventdistr
@@ -223,11 +223,11 @@ freqdata = [None] * y
 dftdata[q] = pyfftw.interfaces.numpy_fft.rfft(lindata[q])
 freqdata[q] = pyfftw.interfaces.numpy_fft.rfftfreq(len(time),1/500)
 
-plt.plot(freqdata[q],np.abs(dftdata[q]))
-plt.xlabel("Sample Frequency (MHz)")
-plt.ylabel("Amplitude")
-plt.title("Fourier transform of event " + str(q) + " - File " + str(file))
-plt.show()
+#plt.plot(freqdata[q],np.abs(dftdata[q]))
+#plt.xlabel("Sample Frequency (MHz)")
+#plt.ylabel("Amplitude")
+#plt.title("Fourier transform of event " + str(q) + " - File " + str(file))
+#plt.show()
 
 # Create FT of all data
 dfthist = [0] * len(dftdata[q])

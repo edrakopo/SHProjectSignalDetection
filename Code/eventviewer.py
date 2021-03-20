@@ -5,7 +5,10 @@ import functions as fnc
 
 # Viewing particular event of particular file.
 # Open the data, apply to variable
-file = "E:\PMTsignals\Boulby_78_Signal.root"
+file = "E:\PMTsignals\Run203-PMT78.root"
+# File directory specific, just to remove the E:\PMTsignals\ rubbish
+filename = file[14:]
+
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -24,7 +27,9 @@ for i in range(eventno):
 Nevent = int(input("What event do you wish to view? "))
 
 plt.plot(time,branches['ADC'][Nevent])
-plt.xlabel("Sample Time (ns)")
-plt.ylabel("ADC Value")
-plt.title(str(file) + " event " + str(Nevent))
+plt.xlabel("Sample Time (ns)", fontsize = 17)
+plt.ylabel("ADC Value", fontsize = 17)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
+plt.title(str(filename) + " event " + str(Nevent), fontsize = 22)
 plt.show()

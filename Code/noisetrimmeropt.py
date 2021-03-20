@@ -37,7 +37,7 @@ import xlsxwriter
 # PMTsignals/Run103-noise-PMT107.root
 
 # Open the data, apply to variable
-datafull = fnc.rootopen("E:\PMTsignals\Run203-PMT78.root")
+datafull = fnc.rootopen("E:\PMTsignals\Boulby_78.root")
 
 # how many values in each event
 samples = 150
@@ -51,7 +51,7 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 1000
+y = 1000000
 
 # take the y values from data, to stop array index mismatching
 data = datafull[:y]

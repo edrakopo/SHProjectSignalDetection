@@ -24,7 +24,7 @@ from scipy import stats
 #
 ###############################
 
-file = "E:\PMTsignals\Boulby_78_After.root"
+file = "E:\PMTsignals\Boulby_107_After.root"
 # Open the data, apply to variable
 datafull = fnc.rootopen(file)
 
@@ -41,8 +41,8 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 5000 #segments
-ys = 50000 # full list size
+y = 1000 #segments, keep this low to ensure that the code doesnt break
+ys = 100000 # full list size
 
 afterpulsetimes = []
 # the code doesnt like being iterated over large lists, so take smaller lists and compile the results

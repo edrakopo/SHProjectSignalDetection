@@ -33,7 +33,7 @@ from scipy import stats
 
 
 # Open the data, apply to variable
-file = "E:\PMTsignals\Run103-noise-PMT107.root"
+file = "E:\PMTsignals\Run203-PMT78.root"
 
 tree = uproot.open(file)["Tree"]
 branches = tree.arrays()
@@ -54,7 +54,7 @@ for i in range(samples):
     time.append(i*2)
 
 # Event control, how many events do you want to process?
-y = 100000
+y = 100
 
 # take the y values from data, to stop array index mismatching
 data = datafull[:y]
@@ -137,7 +137,7 @@ for n in range(len(rollingdata)):
 
     # Apply length of sample size
     fwhmlength = 2*count*timegate
-    #print("Event: " + str(n) + "\nFWHM Value: " + str(fwhmlength))
+    print("Event: " + str(n) + "\nFWHM Value: " + str(fwhmlength))
     # plotting purposes
     #fwhmlist = [FWHMVAL] * len(time)
     fwhmlist = [halfmin] * len(time)

@@ -66,7 +66,7 @@ newdataint = fnc.LCMS(dataint)
 # Testing linfit against LCMS
 
 # Limiting size
-y = 100000
+y = 1000000
 datanew = datafull[:y]
 
 
@@ -168,12 +168,14 @@ print("Time taken for LCMSfast: " + str(totalLCMSfast) + "s")
 print("Time taken for LCMSlist: " + str(totalLCMSlist) + "s")
 
 # Plot LINFIT AND LCMSdata together
-plt.plot(time,yline[9],color='black',markersize=2, label = "Linfit", linewidth =1)
-plt.plot(time,datanewLCMS[9], color = 'red', markersize = 2, label = 'LCMS', linewidth = 3)
-plt.plot(time,datanewLCMSfast[9], color = 'yellow', markersize = 2, label = 'LCMSfast', linewidth = 0.5)
-plt.plot(time,datanewLCMSlist[9], color = 'blue', markersize = 2, label = 'LCMSlist', linewidth = 0.5)
-plt.legend()
-plt.xlabel("Sample Time (ns)")
-plt.ylabel("ADC Value")
-plt.title("LCMS Linear Trendline fit against Linfit Fit for event 9" )
-plt.show()
+#plt.plot(time,yline[9],color='black',markersize=2, label = "Polynomial.fit (LS)", linewidth =2)
+#plt.plot(time,datanewLCMS[9], color = 'red', markersize = 2, label = 'LCMS', linewidth = 3)
+#plt.plot(time,datanewLCMSfast[9], color = 'yellow', markersize = 2, label = 'LCMSfast', linewidth = 0.5)
+#plt.plot(time,datanewLCMSlist[9], color = 'blue', markersize = 2, label = 'LCMSlist', linewidth = 0.5)
+#plt.legend(fontsize = 15)
+#plt.xlabel("Sample Time (ns)", fontsize = 17)
+#plt.ylabel("ADC Value", fontsize = 17)
+#plt.xticks(fontsize=16)
+#plt.yticks(fontsize=16)
+#plt.title("Least Squares Trendline Removal for event 9", fontsize = 22)
+#plt.show()
