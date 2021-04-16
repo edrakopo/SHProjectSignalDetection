@@ -4,7 +4,7 @@
 All functions and programs are within the Code folder.
 The main functions that allow this code to run are within functions.py (and functions.html), and that is where you should look if you want to find useful methods and scripts for processing signal data.
 
-All other files are just scripts developed that use the functions from functions.py to complete a task, as has been described below.
+All other files are just scripts developed that use the functions from functions.py to complete a task, as has been described below. Some of the descriptions may be slightly out of date.
 
 If you have any questions, please feel free to email me.
 
