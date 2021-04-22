@@ -52,14 +52,14 @@ for i in range(eventno):
 print("Event number: ")
 print(str(len(branches['ADC'])))
 # Plot the first 50 events
-#for i in range(10000):
+for i in range(10000):
 
-    #datarepeated = branches['ADC'][i]
-    #plt.plot(time,datarepeated)
-    #plt.xlabel("Sample Time (ns)")
-    #plt.ylabel("ADC Value")
-    #plt.title(str(file) + " event " + str(i))
-    #plt.show()
+    datarepeated = branches['ADC'][i]
+    plt.plot(time,datarepeated)
+    plt.xlabel("Sample Time (ns)")
+    plt.ylabel("ADC Value")
+    plt.title(str(file) + " event " + str(i))
+    plt.show()
 
 
 # So we have in the file:
@@ -109,7 +109,9 @@ print("Data collation complete")
 
 
 # Line of best fit, to see modulation in baseline
-pfit, stats, rms, c, m = fnc.linfit(time,branches,y)
+datanew = branches['ADC']
+
+pfit, stats, rms, c, m = fnc.linfit(time,datanew,y)
 # pfit is quite complicated, if given more time at the end REVISE THIS BIT OF CODE to not need c or m, but just pfit
 print("Linear Fitting complete")
 # Create distribution of 10th event - RAW DATA, signal removed
@@ -130,17 +132,18 @@ while True:
         break
 
 
-
+# Apply linear fit over data
 for j in range(len(time)):
     yline.append(m[q]*time[j]+c[q])
 print("Linear Fit Applied")
+
 # Plot line of best fit over data
-plt.plot(time,branches['ADC'][q],color='black',markersize=2)
-plt.plot(time,yline,color='red',linewidth=3)
-plt.xlabel("Sample Time (ns)")
-plt.ylabel("ADC Value")
-plt.title("Trendline of " + str(file) + " event " + str(q) )
-plt.show()
+#plt.plot(time,branches['ADC'][q],color='black',markersize=2)
+#plt.plot(time,yline,color='red',linewidth=3)
+#plt.xlabel("Sample Time (ns)")
+#plt.ylabel("ADC Value")
+#plt.title("Trendline of " + str(file) + " event " + str(q) )
+#plt.show()
 
 
 ############# BASELINE/LINEAR TREND REMOVAL ###############
@@ -185,14 +188,14 @@ print("Completed Trendline Removal")
 
 
 # To ensure its not a signal variable
-if sigvals[q] == 0:
+#if sigvals[q] == 0:
 
     # Plot trendline/baseline removed data
-    plt.plot(time,lindata[q],color='black',markersize=2)
-    plt.xlabel("Sample Time (ns)")
-    plt.ylabel("ADC Value")
-    plt.title("Trendline and Baseline removed " + str(file) + " event " + str(q) )
-    plt.show()
+#    plt.plot(time,lindata[q],color='black',markersize=2)
+#    plt.xlabel("Sample Time (ns)")
+#    plt.ylabel("ADC Value")
+#    plt.title("Trendline and Baseline removed " + str(file) + " event " + str(q) )
+#    plt.show()
 
 # Create distribution of 10th event - Trendline/baseline removed
 # filter out signal values (Nonetype right now) from eventdistr
@@ -220,22 +223,20 @@ freqdata = [None] * y
 dftdata[q] = pyfftw.interfaces.numpy_fft.rfft(lindata[q])
 freqdata[q] = pyfftw.interfaces.numpy_fft.rfftfreq(len(time),1/500)
 
-plt.plot(freqdata[q],np.abs(dftdata[q]))
-plt.xlabel("Sample Frequency (MHz)")
-plt.ylabel("Amplitude")
-plt.title("Fourier transform of event " + str(q) + " - File " + str(file))
-plt.show()
+#plt.plot(freqdata[q],np.abs(dftdata[q]))
+#plt.xlabel("Sample Frequency (MHz)")
+#plt.ylabel("Amplitude")
+#plt.title("Fourier transform of event " + str(q) + " - File " + str(file))
+#plt.show()
 
 # Create FT of all data
 dfthist = [0] * len(dftdata[q])
 
 for i in range(y):
-    # ensure no signal collected for now
-    if sigvals[i] == 0:
-        # create fourier transform here
-        dftdata[i] = pyfftw.interfaces.numpy_fft.rfft(lindata[i])
-        # add to summation array
-        dfthist = np.add(dfthist,dftdata[i])
+    # create fourier transform here
+    dftdata[i] = pyfftw.interfaces.numpy_fft.rfft(lindata[i])
+    # add to summation array
+    dfthist = np.add(dfthist,dftdata[i])
 
 plt.plot(freqdata[q],np.abs((dfthist).imag))
 plt.xlabel("Sample Frequency (MHz)")

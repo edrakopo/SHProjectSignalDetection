@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module functions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>functions</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:e%3A%5Cgithub%5Cshprojectsignaldetection%5Ccode%5Cfunctions.py">e:\github\shprojectsignaldetection\code\functions.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="math.html">math</a><br>
+<a href="numpy.html">numpy</a><br>
+<a href="pandas.html">pandas</a><br>
+</td><td width="25%" valign=top><a href="matplotlib.pyplot.html">matplotlib.pyplot</a><br>
+<a href="pyfftw.html">pyfftw</a><br>
+<a href="scipy.signal.html">scipy.signal</a><br>
+</td><td width="25%" valign=top><a href="statistics.html">statistics</a><br>
+<a href="scipy.stats.html">scipy.stats</a><br>
+<a href="uproot.html">uproot</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-LCMS"><strong>LCMS</strong></a>(data)</dt><dd><tt>Use&nbsp;LCMS&nbsp;Algorithm&nbsp;to&nbsp;remove&nbsp;linear&nbsp;trendlines&nbsp;within&nbsp;data.<br>
+Applies&nbsp;to&nbsp;one&nbsp;event,&nbsp;iterate&nbsp;within&nbsp;a&nbsp;list&nbsp;to&nbsp;apply&nbsp;to&nbsp;all&nbsp;events.<br>
+&nbsp;<br>
+:param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;sample&nbsp;data&nbsp;(y&nbsp;component)<br>
+:return:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;data&nbsp;with&nbsp;linear&nbsp;trendline&nbsp;removed</tt></dd></dl>
+ <dl><dt><a name="-LCMSfast"><strong>LCMSfast</strong></a>(data, xhalf, xi)</dt><dd><tt>Use&nbsp;LCMS&nbsp;Algorithm&nbsp;to&nbsp;remove&nbsp;linear&nbsp;trendlines&nbsp;within&nbsp;data.<br>
+Applies&nbsp;to&nbsp;one&nbsp;event,&nbsp;iterate&nbsp;within&nbsp;a&nbsp;list&nbsp;to&nbsp;apply&nbsp;to&nbsp;all&nbsp;events.<br>
+&nbsp;<br>
+Faster&nbsp;method,&nbsp;due&nbsp;to&nbsp;the&nbsp;x&nbsp;axis&nbsp;appropriate&nbsp;for&nbsp;this&nbsp;function<br>
+being&nbsp;determined&nbsp;outwith&nbsp;the&nbsp;function.&nbsp;Please&nbsp;look&nbsp;at<br>
+https://inspirehep.net/literature/928989<br>
+more&nbsp;guidance&nbsp;on&nbsp;this&nbsp;issue,&nbsp;where&nbsp;xi&nbsp;is&nbsp;xi&nbsp;and&nbsp;xhalf&nbsp;is<br>
+equivalent&nbsp;to&nbsp;16&nbsp;from&nbsp;section&nbsp;2.2.<br>
+&nbsp;<br>
+:param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;sample&nbsp;data&nbsp;(y&nbsp;component)<br>
+:param&nbsp;xhalf:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Half&nbsp;the&nbsp;largest&nbsp;value&nbsp;in&nbsp;the&nbsp;x&nbsp;components<br>
+:param&nbsp;xi:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New&nbsp;x&nbsp;axis&nbsp;based&nbsp;on&nbsp;xhalf,&nbsp;in&nbsp;which&nbsp;each&nbsp;point&nbsp;is&nbsp;one&nbsp;entry&nbsp;on&nbsp;the&nbsp;y&nbsp;axis<br>
+:return&nbsp;datafn:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;data&nbsp;with&nbsp;linear&nbsp;trendline&nbsp;removed</tt></dd></dl>
+ <dl><dt><a name="-LCMSlist"><strong>LCMSlist</strong></a>(datas)</dt><dd><tt>Use&nbsp;LCMS&nbsp;Algorithm&nbsp;to&nbsp;remove&nbsp;linear&nbsp;trendlines&nbsp;within&nbsp;data.<br>
+Applies&nbsp;to&nbsp;a&nbsp;list&nbsp;of&nbsp;events.&nbsp;Fastest&nbsp;method&nbsp;out&nbsp;of&nbsp;all&nbsp;LCMS&nbsp;methods<br>
+&nbsp;<br>
+:param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;events<br>
+:return&nbsp;datafn:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;events&nbsp;with&nbsp;linear&nbsp;trendline&nbsp;removed</tt></dd></dl>
+ <dl><dt><a name="-adcdist"><strong>adcdist</strong></a>(events, samplesize)</dt><dd><tt>Takes&nbsp;all&nbsp;events,&nbsp;and&nbsp;records&nbsp;the&nbsp;10th&nbsp;sample&nbsp;from&nbsp;each&nbsp;event.<br>
+Then&nbsp;creating&nbsp;histogram&nbsp;of&nbsp;the&nbsp;samples,&nbsp;and&nbsp;returns&nbsp;the&nbsp;collection&nbsp;of&nbsp;10th&nbsp;events.<br>
+&nbsp;<br>
+:param&nbsp;events:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Events&nbsp;from&nbsp;ROOT&nbsp;file<br>
+:param&nbsp;samplesize:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No.&nbsp;of&nbsp;samples,&nbsp;to&nbsp;scale&nbsp;for&nbsp;different&nbsp;sample&nbsp;lengths<br>
+:return&nbsp;PLOT:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plot&nbsp;of&nbsp;histogram&nbsp;distribution<br>
+:return&nbsp;eventdistr:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;all&nbsp;10th&nbsp;samples&nbsp;from&nbsp;all&nbsp;events</tt></dd></dl>
+ <dl><dt><a name="-baselinesubtraction"><strong>baselinesubtraction</strong></a>(data, mean)</dt><dd><tt>Takes&nbsp;data&nbsp;and&nbsp;mean&nbsp;value,&nbsp;and&nbsp;removes&nbsp;the&nbsp;baseline&nbsp;from&nbsp;all&nbsp;data&nbsp;passed&nbsp;in.<br>
+Returns&nbsp;array&nbsp;of&nbsp;data&nbsp;with&nbsp;baseline&nbsp;removed<br>
+&nbsp;<br>
+OBSOLETE&nbsp;-&nbsp;This&nbsp;and&nbsp;LINFIT&nbsp;have&nbsp;both&nbsp;been&nbsp;replaced&nbsp;by&nbsp;function&nbsp;LCMS<br>
+&nbsp;<br>
+:param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;event&nbsp;data<br>
+:param&nbsp;mean:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;all&nbsp;mean&nbsp;across&nbsp;all&nbsp;Events<br>
+:return&nbsp;scaleddata:&nbsp;Array&nbsp;of&nbsp;event&nbsp;data&nbsp;baseline&nbsp;removed</tt></dd></dl>
+ <dl><dt><a name="-datacollate"><strong>datacollate</strong></a>(branches, y)</dt><dd><tt>Method&nbsp;for&nbsp;collating&nbsp;important&nbsp;characeristics&nbsp;of&nbsp;each&nbsp;event&nbsp;within&nbsp;lists.<br>
+Returns&nbsp;the&nbsp;means,&nbsp;standard&nbsp;deviations,&nbsp;minimum&nbsp;values,&nbsp;maximum&nbsp;values,&nbsp;and&nbsp;possible&nbsp;signal&nbsp;values&nbsp;of&nbsp;all&nbsp;events&nbsp;within&nbsp;(y)&nbsp;events&nbsp;registered<br>
+&nbsp;<br>
+:param&nbsp;branches:&nbsp;&nbsp;&nbsp;&nbsp;Event&nbsp;data&nbsp;from&nbsp;ROOT&nbsp;file<br>
+:param&nbsp;y:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;of&nbsp;events&nbsp;to&nbsp;be&nbsp;analysed<br>
+:return&nbsp;meanvals:&nbsp;&nbsp;&nbsp;Mean&nbsp;values&nbsp;of&nbsp;all&nbsp;events&nbsp;in&nbsp;a&nbsp;list<br>
+:return&nbsp;stdvals:&nbsp;&nbsp;&nbsp;&nbsp;Standard&nbsp;deviation&nbsp;values&nbsp;of&nbsp;all&nbsp;events&nbsp;in&nbsp;a&nbsp;list<br>
+:return&nbsp;minvals:&nbsp;&nbsp;&nbsp;&nbsp;Minimum&nbsp;values&nbsp;of&nbsp;all&nbsp;events&nbsp;in&nbsp;a&nbsp;list<br>
+:return&nbsp;maxvals:&nbsp;&nbsp;&nbsp;&nbsp;Maxmimum&nbsp;values&nbsp;of&nbsp;all&nbsp;events&nbsp;in&nbsp;a&nbsp;list<br>
+:return&nbsp;sigvals:&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;marking&nbsp;all&nbsp;events&nbsp;that&nbsp;had&nbsp;possible&nbsp;signals&nbsp;within&nbsp;them&nbsp;(0&nbsp;or&nbsp;1)<br>
+:return&nbsp;medianvals:&nbsp;Median&nbsp;values&nbsp;of&nbsp;all&nbsp;events&nbsp;in&nbsp;a&nbsp;list</tt></dd></dl>
+ <dl><dt><a name="-fouriertransformsimple"><strong>fouriertransformsimple</strong></a>(time, scaleddata, samplefreq, freq)</dt><dd><tt>Takes&nbsp;time,&nbsp;data,&nbsp;and&nbsp;the&nbsp;sample&nbsp;frequency.&nbsp;Asks&nbsp;if&nbsp;frequency&nbsp;is&nbsp;needed.<br>
+Returns&nbsp;FT&nbsp;and&nbsp;FT-frequency&nbsp;of&nbsp;said&nbsp;data.<br>
+&nbsp;<br>
+:param&nbsp;time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;all&nbsp;time&nbsp;Values<br>
+:param&nbsp;scaleddata:&nbsp;&nbsp;Array&nbsp;of&nbsp;events<br>
+:param&nbsp;samplefreq:&nbsp;&nbsp;Sampling&nbsp;frequency<br>
+:param&nbsp;freq:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Boolean&nbsp;for&nbsp;whether&nbsp;or&nbsp;not&nbsp;freq&nbsp;needs&nbsp;to&nbsp;be&nbsp;calculated<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;-&nbsp;Calculated&nbsp;already<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False&nbsp;-&nbsp;Not&nbsp;yet&nbsp;calculated<br>
+:return&nbsp;dftdata:&nbsp;&nbsp;&nbsp;&nbsp;FT&nbsp;data&nbsp;of&nbsp;events<br>
+:return&nbsp;freqdata:&nbsp;&nbsp;&nbsp;FT-frequency&nbsp;data</tt></dd></dl>
+ <dl><dt><a name="-linfit"><strong>linfit</strong></a>(x, y, z)</dt><dd><tt>Method&nbsp;for&nbsp;finding&nbsp;the&nbsp;linear&nbsp;fit&nbsp;of&nbsp;a&nbsp;2D&nbsp;plot&nbsp;for&nbsp;multiple&nbsp;non-signal&nbsp;events.<br>
+Returns&nbsp;the&nbsp;numpy&nbsp;array&nbsp;of&nbsp;the&nbsp;y&nbsp;axis&nbsp;points&nbsp;for&nbsp;the&nbsp;best&nbsp;fit&nbsp;line.<br>
+WARNING&nbsp;-&nbsp;Only&nbsp;applies&nbsp;to&nbsp;branches['ADC'][i],&nbsp;as&nbsp;hardcoded&nbsp;into&nbsp;'data'&nbsp;variable.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;you&nbsp;want&nbsp;this&nbsp;to&nbsp;change,&nbsp;you&nbsp;can&nbsp;alter&nbsp;it&nbsp;within&nbsp;the&nbsp;code&nbsp;on&nbsp;line&nbsp;33<br>
+&nbsp;<br>
+OBSOLETE&nbsp;-&nbsp;This&nbsp;and&nbsp;baselinesubtraction&nbsp;have&nbsp;both&nbsp;been&nbsp;replaced&nbsp;by&nbsp;function&nbsp;LCMS<br>
+&nbsp;<br>
+:param&nbsp;x:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;values<br>
+:param&nbsp;y:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;values<br>
+:parad&nbsp;z:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;of&nbsp;events&nbsp;found<br>
+:return&nbsp;pfit:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fitting&nbsp;parameters(offset&nbsp;value,&nbsp;gradient&nbsp;value)<br>
+:return&nbsp;stats:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stats(residuals,&nbsp;rank,&nbsp;singular&nbsp;values&nbsp;of&nbsp;matrix,&nbsp;rcond)<br>
+:return&nbsp;rms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root&nbsp;mean&nbsp;square&nbsp;residual&nbsp;value<br>
+:return&nbsp;c:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offset<br>
+:return&nbsp;m:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mean</tt></dd></dl>
+ <dl><dt><a name="-rollmean"><strong>rollmean</strong></a>(data, window)</dt><dd><tt>Takes&nbsp;data,&nbsp;and&nbsp;the&nbsp;window&nbsp;size.<br>
+Returns&nbsp;the&nbsp;rolling&nbsp;mean&nbsp;data<br>
+&nbsp;<br>
+:param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;data&nbsp;Values<br>
+:param&nbsp;window:&nbsp;&nbsp;Size&nbsp;of&nbsp;window<br>
+:return:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;rolling&nbsp;mean&nbsp;values</tt></dd></dl>
+ <dl><dt><a name="-rootopen"><strong>rootopen</strong></a>(file)</dt><dd><tt>Opens&nbsp;a&nbsp;root&nbsp;file&nbsp;and&nbsp;pulls&nbsp;the&nbsp;appropriate&nbsp;data&nbsp;into&nbsp;an&nbsp;array,&nbsp;for&nbsp;easier&nbsp;use.<br>
+data&nbsp;is&nbsp;now&nbsp;an&nbsp;array&nbsp;of&nbsp;all&nbsp;the&nbsp;events,&nbsp;in&nbsp;which&nbsp;sample&nbsp;data&nbsp;is&nbsp;held.<br>
+Returns&nbsp;the&nbsp;event&nbsp;data.<br>
+-&gt;&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;Tree<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;branches<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;['ADC']<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;[Events&nbsp;0...n]<br>
+&nbsp;<br>
+Example&nbsp;usage;<br>
+datafull&nbsp;=&nbsp;fnc.<a href="#-rootopen">rootopen</a>("E:\PMTsignals\Run203-PMT78.root")<br>
+&nbsp;<br>
+:param&nbsp;root&nbsp;file:<br>
+:return&nbsp;data:</tt></dd></dl>
+ <dl><dt><a name="-scaledata"><strong>scaledata</strong></a>(data, butterfreq, rollingwindow, lcms, butter, rolling)</dt><dd><tt>Collects&nbsp;the&nbsp;standard&nbsp;signal&nbsp;data,&nbsp;and&nbsp;applies&nbsp;the&nbsp;different&nbsp;effects&nbsp;to&nbsp;the&nbsp;events<br>
+to&nbsp;improve&nbsp;the&nbsp;ability&nbsp;to&nbsp;identify&nbsp;key&nbsp;components.<br>
+&nbsp;<br>
+Effects&nbsp;are:<br>
+-LCMS&nbsp;pedestal&nbsp;and&nbsp;trendline&nbsp;removal<br>
+-Butterworth&nbsp;low-pass&nbsp;frequency&nbsp;filter<br>
+-Rolling&nbsp;mean&nbsp;across&nbsp;event&nbsp;data<br>
+&nbsp;<br>
+Includes&nbsp;modifiable&nbsp;butterworth&nbsp;frequency&nbsp;value,&nbsp;and&nbsp;rolling&nbsp;mean&nbsp;window&nbsp;size.<br>
+&nbsp;<br>
+:param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;events<br>
+:param&nbsp;butterfreq:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integer&nbsp;for&nbsp;the&nbsp;frequency&nbsp;limit&nbsp;of&nbsp;the&nbsp;butterworth&nbsp;filter&nbsp;(MHz)<br>
+:param&nbsp;rollingwindow:&nbsp;&nbsp;&nbsp;Integer&nbsp;for&nbsp;size&nbsp;of&nbsp;rolling&nbsp;mean&nbsp;window<br>
+:param&nbsp;lcms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bool&nbsp;for&nbsp;whether&nbsp;LCMS&nbsp;is&nbsp;applied<br>
+:param&nbsp;butter:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bool&nbsp;for&nbsp;whether&nbsp;butterworth&nbsp;filter&nbsp;is&nbsp;applied<br>
+:param&nbsp;rolling:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bool&nbsp;for&nbsp;whether&nbsp;rolling&nbsp;mean&nbsp;is&nbsp;applied<br>
+&nbsp;<br>
+:return&nbsp;scaleddata:&nbsp;&nbsp;&nbsp;&nbsp;Data&nbsp;with&nbsp;corresponding&nbsp;effects&nbsp;applied&nbsp;appropriately</tt></dd></dl>
+ <dl><dt><a name="-sigmaevents"><strong>sigmaevents</strong></a>(data, meanval, stdval, x)</dt><dd><tt>Takes&nbsp;data&nbsp;from&nbsp;one&nbsp;event&nbsp;and&nbsp;checks&nbsp;what&nbsp;values&nbsp;are&nbsp;beyong&nbsp;X&nbsp;sigma&nbsp;of&nbsp;the&nbsp;mean.<br>
+Returns&nbsp;list&nbsp;of&nbsp;these&nbsp;Values,&nbsp;with&nbsp;all&nbsp;values&nbsp;not&nbsp;beyond&nbsp;sigma&nbsp;set&nbsp;at&nbsp;mean.<br>
+&nbsp;<br>
+:param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data&nbsp;from&nbsp;one&nbsp;signal&nbsp;event<br>
+:param&nbsp;meanvals:&nbsp;&nbsp;&nbsp;&nbsp;Mean&nbsp;valuation&nbsp;of&nbsp;said&nbsp;event<br>
+:param&nbsp;stdvals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Standard&nbsp;deviation&nbsp;of&nbsp;event<br>
+:param&nbsp;x:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;sigma&nbsp;needed&nbsp;to&nbsp;trigger&nbsp;listing<br>
+:return&nbsp;sigdata:&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;values&nbsp;beyond&nbsp;x&nbsp;sigma</tt></dd></dl>
+ <dl><dt><a name="-signalspotter"><strong>signalspotter</strong></a>(data, timegate, depthcutoff, fwhmcutoff)</dt><dd><tt>Collects&nbsp;data&nbsp;given,&nbsp;and&nbsp;the&nbsp;cutoff&nbsp;values&nbsp;required.<br>
+Calculates&nbsp;the&nbsp;FWHM&nbsp;and&nbsp;depth&nbsp;of&nbsp;all&nbsp;events.<br>
+Determines&nbsp;if&nbsp;events&nbsp;are&nbsp;signals&nbsp;based&nbsp;on&nbsp;cutoff&nbsp;values.<br>
+Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;signals&nbsp;spotted&nbsp;and&nbsp;a&nbsp;list&nbsp;of&nbsp;signals&nbsp;events.<br>
+&nbsp;<br>
+:param&nbsp;data:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;of&nbsp;events<br>
+:param&nbsp;timegate:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Length&nbsp;of&nbsp;time&nbsp;between&nbsp;each&nbsp;recorded&nbsp;sample&nbsp;(eg:&nbsp;2ns&nbsp;-&gt;&nbsp;2)<br>
+:param&nbsp;depthcutoff:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Value&nbsp;for&nbsp;signal&nbsp;depth&nbsp;cutoff<br>
+:param&nbsp;fwhmcutoff:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Upper&nbsp;and&nbsp;Lower&nbsp;bounds&nbsp;for&nbsp;FWHM&nbsp;cutoff,&nbsp;written&nbsp;as&nbsp;(LB,UB)<br>
+:return&nbsp;signalno,&nbsp;signallist:&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;the&nbsp;signal&nbsp;event&nbsp;numbers,&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;signal&nbsp;events&nbsp;themselves</tt></dd></dl>
+</td></tr></table>
+</body></html>
