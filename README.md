@@ -1,4 +1,4 @@
-# SHProjectSignalDetection
+# SHProjectSignalDetection - Analysing DT5742 Digitiser pulses
 
 
 All functions and programs are within the Code folder.
